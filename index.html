@@ -509,7 +509,6 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     try { if (!k) k = localStorage.getItem('may-key'); } catch (e) { /* storage blocked: the link still works */ }
     return k; // remembered on this device only after the server accepts it
   })();
-  if (WALLET_KEY && !location.hash) history.replaceState(null, '', '#k=' + WALLET_KEY); // keep bookmarks complete
 
   async function rpc(fn, args) {
     const headers = { 'Content-Type': 'application/json', apikey: CFG.supabaseKey };
@@ -559,7 +558,10 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
         for (const k of want) { this.real.set(k, { ...(((res && res.months) || {})[k] || {}) }); this.loaded.add(k); }
         this.settings = (res && res.settings) || {};
         this.applyPending(); // local changes still on their way win
-        try { localStorage.setItem('may-key', WALLET_KEY); } catch (e) { /* storage blocked */ }
+        // Remember the key on this device, then take it out of the address bar so it can't leak in a screenshot or a copied URL.
+        let remembered = false;
+        try { localStorage.setItem('may-key', WALLET_KEY); remembered = localStorage.getItem('may-key') === WALLET_KEY; } catch (e) { /* storage blocked: keep the key in the URL */ }
+        if (remembered && location.hash) history.replaceState(null, '', location.pathname + location.search);
         this.saveCache(); this.setOnline(true);
         if (validCats(this.settings.cats)) applyCats(this.settings.cats);
         scheduleRender();
