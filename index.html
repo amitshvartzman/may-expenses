@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F5F6F8">
+<title>מעקב הוצאות- מאי</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z' fill='%23E8679D'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: arrangement 1. Three columns: summary + insights | donut + add button | calendar + weekdays; categories across; pace chart + recent below. Clean grey, colour only in data. Single light theme. */
+:root {
+  color-scheme: light;
+  --bg: #F5F6F8;
+  --tile: #FFFFFF;
+  --border: #DCE0E6;
+  --ink: #1E2430;
+  --muted: #5F6776;
+  --faint: #EEF0F3;
+  --btn: #2E3644;
+  --grid: #E6E9EE;
+  --more: #A3324F;
+  --less: #2F6B4F;
+  --warn: #9A6A12;
+  --q1: #B8336F; --q2: #E8679D; --q3: #F2A0BF; --q4: #E0827A; --q5: #B56DB8;
+  --c-apt: var(--q1); --c-groc: var(--q2); --c-clothes: var(--q3); --c-out: var(--q4); --c-other: var(--q5);
+  --s1: #FCE6EF; --s2: #F8C6DA; --s3: #F09DBF; --s4: #DD6A9D; --s5: #B8336F;
+  --line: #C93F7C;
+  --last: #9AA1AD;
+  --scrim: rgb(18 21 30 / .68);
+  --glow: rgb(232 103 157 / .55);
+  --font: "Noto Sans Hebrew", system-ui, "Segoe UI", Arial, sans-serif;
+  --r: 18px;
+}
+@property --spin { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); }
+body { margin: 0; color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+::selection { background: var(--s2); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--line); outline-offset: 2px; border-radius: 10px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.num { font-variant-numeric: tabular-nums; }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+.page { max-width: 1320px; margin: 0 auto; padding-inline: 24px; padding-block: max(22px, env(safe-area-inset-top)) 48px; }
+
+/* Header */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 4px 2px 18px; }
+.brand { min-width: 0; max-width: 62ch; }
+.brand p { margin: 0 0 2px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.brand h1 { margin: 0; font-weight: 800; font-size: 24px; line-height: 1.3; text-wrap: balance; }
+.brand h1 span { color: var(--muted); font-weight: 600; }
+.ctl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1.5px solid var(--border); border-radius: 12px; background: var(--tile); padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 6px 18px; border-radius: 9px; color: var(--muted); font-weight: 600; font-size: 14px; transition: background .2s, color .2s; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+.per { display: inline-flex; align-items: center; gap: 2px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--tile); padding: 3px; }
+.per p { margin: 0; min-width: 150px; text-align: center; font-weight: 700; font-size: 14px; }
+.icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); transition: background .2s, color .2s; }
+.icon-btn:hover:not(:disabled) { background: var(--faint); color: var(--ink); }
+.icon-btn:disabled { opacity: .3; cursor: default; }
+.status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--tile); font-size: 13px; font-weight: 600; color: var(--muted); }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--last); }
+.status[data-mode="cloud"] .dot { background: var(--less); }
+.status[data-mode="saving"] .dot { background: var(--q2); animation: blink 1s ease-in-out infinite; }
+.status[data-mode="offline"] .dot { background: var(--warn); }
+.status[data-mode="tour"] .dot { background: var(--q2); }
+@keyframes blink { 50% { opacity: .3; } }
+.chip-btn { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); background: var(--tile); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--muted); transition: color .2s, border-color .2s; }
+.chip-btn:hover { color: var(--ink); border-color: var(--ink); }
+
+/* Grid */
+.grid { display: grid; gap: 14px; grid-template-columns: 1fr 1.45fr 1fr; grid-template-areas: "sum pie heat" "ins pie dow" "cats cats cats" "line line recent"; }
+.tile { background: var(--tile); border: 1.5px solid var(--border); border-radius: var(--r); min-width: 0; display: flex; flex-direction: column; }
+.th { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1.5px solid var(--border); }
+.th h2 { margin: 0; font-weight: 800; font-size: 18px; line-height: 1.2; }
+.th .ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--faint); flex: none; }
+.th .meta { margin-inline-start: auto; color: var(--muted); font-size: 12px; }
+.head-btn { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); background: var(--tile); border-radius: 10px; padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--ink); transition: background .2s; }
+.head-btn:hover { background: var(--faint); }
+.tb { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.a-sum { grid-area: sum; } .a-pie { grid-area: pie; } .a-heat { grid-area: heat; } .a-ins { grid-area: ins; } .a-dow { grid-area: dow; }
+.a-cats { grid-area: cats; } .a-line { grid-area: line; } .a-recent { grid-area: recent; }
+.empty { margin: auto 0; padding: 18px 6px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* Summary */
+.big { margin: 0; font-weight: 800; font-size: 40px; line-height: 1.1; }
+.delta { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: var(--faint); font-size: 13px; font-weight: 600; width: fit-content; }
+.delta.more { color: var(--more); } .delta.less { color: var(--less); }
+.kv { display: flex; gap: 22px; margin-top: 14px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+.kv b { display: block; color: var(--ink); font-size: 17px; }
+
+/* Donut */
+.donut-box { position: relative; width: min(330px, 100%); aspect-ratio: 1; margin: 6px auto 0; }
+.donut-box svg { width: 100%; height: 100%; display: block; }
+.seg-arc { transition: stroke-width .25s cubic-bezier(.2,.8,.2,1), opacity .3s; cursor: pointer; }
+.seg-arc:hover, .seg-arc.on { stroke-width: 30; }
+.seg-arc.dim { opacity: .3; }
+.seg-arc.pulse { animation: pulse 1s cubic-bezier(.2,.8,.2,1); }
+@keyframes pulse { 30% { stroke-width: 36; } }
+.donut-center { position: absolute; inset: 22%; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.donut-center b { font-weight: 800; font-size: 28px; line-height: 1.15; }
+.donut-center small { color: var(--muted); font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 12px 0 4px; font-size: 13px; }
+.legend button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 3px 4px; border-radius: 6px; color: var(--ink); }
+.legend button[aria-pressed="true"] { background: var(--faint); font-weight: 700; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; display: block; }
+
+/* Heart after adding an expense */
+.love { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 3; }
+.love-core { position: relative; display: grid; justify-items: center; gap: 6px; }
+.love-heart { width: 104px; height: 104px; filter: drop-shadow(0 10px 22px rgb(201 63 124 / .45)); opacity: 0; }
+.love-text { font-size: 13px; font-weight: 700; color: var(--line); background: var(--tile); padding: 2px 12px; border-radius: 999px; box-shadow: 0 4px 14px rgb(30 36 48 / .12); opacity: 0; }
+.love .mini { position: absolute; left: 50%; top: 42px; width: 18px; height: 18px; margin: -9px 0 0 -9px; opacity: 0; color: var(--q2); }
+.love .mini:nth-child(odd) { color: var(--q1); }
+.love.go .love-heart { animation: beat 2.3s cubic-bezier(.2,.8,.2,1) forwards; }
+.love.go .love-text { animation: say 2.3s ease forwards; }
+.love.go .mini { animation: burst 1.3s cubic-bezier(.15,.75,.25,1) var(--delay) forwards; }
+@keyframes beat { 0% { transform: scale(0); opacity: 0; } 18% { transform: scale(1.22); opacity: 1; } 30% { transform: scale(.94); } 42% { transform: scale(1.12); } 56% { transform: scale(1); } 82% { transform: scale(1); opacity: 1; } 100% { transform: translateY(-14px) scale(1.04); opacity: 0; } }
+@keyframes say { 0%, 22% { opacity: 0; transform: translateY(6px); } 34%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes burst { 0% { opacity: 0; transform: translate(0, 0) scale(.3); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); } }
+
+/* Animated add button */
+.add-wrap { display: grid; place-items: center; gap: 6px; padding: 14px 0 4px; margin-top: auto; }
+.add { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 10px; border: 0; border-radius: 999px; padding: 14px 28px 14px 24px; background: var(--btn); color: #FFFFFF; font-weight: 700; font-size: 17px; box-shadow: 0 10px 26px rgb(30 36 48 / .22); transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s; }
+.add::before { content: ""; position: absolute; inset: -4px; z-index: -1; border-radius: inherit; padding: 3px; background: conic-gradient(from var(--spin), var(--q1), var(--q3), var(--q5), var(--q2), var(--q1));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 5s linear infinite; }
+.add::after { content: ""; position: absolute; inset: 0; z-index: -2; border-radius: inherit; animation: breathe 2.8s ease-out infinite; }
+.add svg { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.add:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 16px 34px rgb(30 36 48 / .28); }
+.add:hover svg { transform: rotate(90deg); }
+.add:active { transform: scale(.97); }
+.add:focus-visible { outline-offset: 6px; border-radius: 999px; }
+.add-hint { color: var(--muted); font-size: 12px; }
+kbd { font-family: var(--font); font-size: 11px; font-weight: 700; padding: 0 6px; border: 1px solid var(--border); border-radius: 5px; }
+@keyframes spin { to { --spin: 360deg; } }
+@keyframes breathe { 0% { box-shadow: 0 0 0 0 rgb(201 63 124 / .35); } 80%, 100% { box-shadow: 0 0 0 16px rgb(201 63 124 / 0); } }
+
+/* Categories */
+.cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); row-gap: 12px; }
+.cat { display: grid; gap: 6px; padding: 4px 16px; border: 0; border-inline-start: 1.5px solid var(--faint); background: none; text-align: start; transition: background .2s; }
+.cat:first-child { border-inline-start: 0; }
+.cat:hover { background: var(--faint); }
+.cat[aria-pressed="true"] { background: var(--s1); }
+.cat-n { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; min-width: 0; }
+.cat-n span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-n i { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.cat-p { font-weight: 800; font-size: 28px; line-height: 1; }
+.cat-a { color: var(--muted); font-size: 13px; }
+.cat-bar { height: 6px; border-radius: 99px; background: var(--faint); overflow: hidden; }
+.cat-bar span { display: block; height: 100%; border-radius: inherit; transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.cat-d { font-size: 12px; font-weight: 600; color: var(--muted); }
+.cat-d.more { color: var(--more); } .cat-d.less { color: var(--less); }
+
+/* Charts */
+.viz { width: 100%; height: auto; display: block; overflow: visible; }
+.viz text { font-family: var(--font); fill: var(--muted); font-size: 12px; }
+.viz .strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz .draw { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: draw 1.6s cubic-bezier(.3,.7,.2,1) .15s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.viz .rise { transform-box: fill-box; transform-origin: bottom; animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes rise { from { transform: scaleY(0); } }
+.legend-line { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.legend-line span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-line i { width: 16px; height: 3px; border-radius: 2px; display: block; }
+.heat { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.heat .d { text-align: center; font-size: 11px; color: var(--muted); }
+.heat .c { aspect-ratio: 1.2; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 600; background: var(--faint); color: var(--ink); }
+.heat .c.anim { animation: pop .5s cubic-bezier(.2,.8,.2,1) both; }
+.heat .c.f { border: 1.5px dashed var(--border); color: var(--muted); background: transparent; }
+.heat .c.k { color: #FFFFFF; }
+.heat .c.t { outline: 2px solid var(--ink); outline-offset: 1px; }
+.heat .c.w { box-shadow: inset 0 -3px 0 var(--ink); }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } }
+.ramp { display: flex; align-items: center; gap: 3px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+.ramp i { width: 14px; height: 9px; border-radius: 2px; display: block; }
+.tip { position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: #FFFFFF; font-size: 13px; padding: 6px 10px; border-radius: 8px; transform: translate(-50%, calc(-100% - 12px)); white-space: nowrap; }
+
+/* Lists */
+.ins { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 14px; }
+.ins li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+.ins .ic { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--faint); }
+.tx-list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }
+.tx { display: grid; grid-template-columns: 1fr 36px; align-items: center; gap: 4px; border-radius: 10px; }
+.tx:hover { background: var(--faint); }
+.tx + .tx { border-top: 1px solid var(--faint); }
+.tx-open { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 0; background: none; padding: 8px 6px; text-align: start; border-radius: 10px; }
+.tx-open i { width: 12px; height: 12px; border-radius: 4px; }
+.tx-main { display: grid; min-width: 0; }
+.tx-main span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.tx-main small { color: var(--muted); font-size: 12px; }
+.tx-open b { font-weight: 700; }
+.tx.new { animation: flash 1.6s ease-out; }
+@keyframes flash { from { background: var(--s1); } }
+.filter { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; padding: 3px 10px; background: var(--s1); font-size: 12px; font-weight: 700; }
+
+/* Dialogs */
+dialog { width: min(540px, calc(100% - 32px)); border: 1.5px solid var(--border); padding: 0; border-radius: 22px; background: var(--tile); color: var(--ink); box-shadow: 0 30px 80px rgb(30 36 48 / .25); }
+dialog::backdrop { background: rgb(30 36 48 / .35); }
+dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
+@keyframes dlg { from { transform: translateY(14px) scale(.97); opacity: 0; } }
+.dlg { display: grid; gap: 18px; padding: 0 0 22px; }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1.5px solid var(--border); }
+.dlg-head h2 { margin: 0; font-weight: 800; font-size: 20px; }
+.dlg-body { display: grid; gap: 18px; padding: 0 20px; }
+.field { display: grid; gap: 7px; border: 0; margin: 0; padding: 0; min-width: 0; }
+.field > label, .field > legend { padding: 0; font-weight: 700; font-size: 14px; }
+.opt { color: var(--muted); font-weight: 400; }
+.amount { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 16px; background: var(--bg); }
+.amount:focus-within { border-color: var(--ink); }
+.amount input { width: 100%; max-width: 240px; border: 0; background: transparent; outline: none; text-align: center; font-weight: 800; font-size: 42px; line-height: 1.2; }
+.amount span { font-size: 28px; color: var(--muted); }
+.pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.pick label { display: grid; justify-items: center; gap: 6px; padding: 10px 4px; min-height: 84px; border-radius: 14px; border: 1.5px solid var(--border); text-align: center; font-size: 12px; font-weight: 600; line-height: 1.25; cursor: pointer; transition: background .2s, border-color .2s, transform .2s; }
+.pick label:hover { transform: translateY(-2px); }
+.pick .bub { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; color: #FFFFFF; }
+.pick input:checked + label { border-color: var(--ink); background: var(--faint); box-shadow: inset 0 0 0 1px var(--ink); }
+.pick input:focus-visible + label { outline: 3px solid var(--line); outline-offset: 2px; }
+.two { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+.text-in { width: 100%; min-height: 46px; padding: 0 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--tile); }
+.text-in:focus { border-color: var(--ink); outline: none; }
+.err { margin: 0; color: var(--more); font-size: 13px; font-weight: 700; }
+.hint { margin: 0; color: var(--line); font-size: 13px; font-weight: 600; }
+.actions { display: flex; gap: 10px; padding: 0 20px; }
+.btn { flex: 1; min-height: 50px; border: 0; border-radius: 14px; background: var(--btn); color: #FFFFFF; font-weight: 700; font-size: 16px; transition: transform .2s; }
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { flex: 0 0 auto; padding: 0 18px; background: var(--faint); color: var(--ink); }
+.btn.danger { flex: 0 0 auto; padding: 0 18px; background: var(--faint); color: var(--more); }
+
+/* Category editor */
+.ce { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 52vh; overflow-y: auto; }
+.ce-row { display: grid; grid-template-columns: 46px 1fr; gap: 10px; align-items: center; }
+.ce-new { padding-top: 10px; margin-top: 4px; border-top: 1.5px dashed var(--border); }
+.swatch { width: 46px; height: 46px; border-radius: 12px; border: 1.5px solid var(--border); box-shadow: inset 0 0 0 3px var(--tile); transition: transform .2s; }
+.swatch:hover { transform: scale(1.06); }
+.swatch[aria-expanded="true"] { border-color: var(--ink); }
+.palette { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--bg); animation: dlg .25s ease; }
+.pal { width: 30px; height: 30px; border-radius: 50%; border: 0; box-shadow: inset 0 0 0 1px rgb(30 36 48 / .1); transition: transform .2s; }
+.pal:hover { transform: scale(1.12); }
+.pal[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--tile), 0 0 0 4px var(--ink); }
+.pal-custom { display: inline-flex; align-items: center; gap: 6px; margin-inline-start: auto; font-size: 13px; font-weight: 600; color: var(--muted); }
+.pal-custom input { width: 38px; height: 30px; padding: 0; border: 1.5px solid var(--border); border-radius: 8px; background: none; cursor: pointer; }
+
+.toast { position: fixed; z-index: 70; bottom: max(24px, env(safe-area-inset-bottom)); left: 50%; transform: translate(-50%, 16px); display: flex; align-items: center; gap: 14px; padding: 10px 12px 10px 18px; border-radius: 14px; background: var(--ink); color: #FFFFFF; font-weight: 600; opacity: 0; transition: opacity .25s, transform .25s; max-width: calc(100% - 32px); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast button { border: 0; background: rgb(255 255 255 / .14); color: inherit; font-weight: 700; padding: 6px 12px; border-radius: 9px; }
+
+/* Missing or wrong link */
+.gate { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 16px; background: var(--bg); }
+.gate-card { width: min(440px, 100%); text-align: center; background: var(--tile); border: 1.5px solid var(--border); border-radius: 22px; padding: 30px 24px; }
+.gate-card .card-icon { margin-bottom: 14px; }
+.gate-card h2 { margin: 0 0 8px; font-weight: 800; font-size: 22px; }
+.gate-card p { margin: 0; color: var(--muted); }
+
+/* Guided tour */
+.tour { position: fixed; inset: 0; z-index: 90; animation: fadein .4s ease; }
+.tour.out { animation: fadeout .35s ease forwards; }
+@keyframes fadein { from { opacity: 0; } }
+@keyframes fadeout { to { opacity: 0; } }
+.spot { position: fixed; border-radius: 22px; box-shadow: 0 0 0 200vmax var(--scrim); pointer-events: none;
+  transition: top .6s cubic-bezier(.2,.8,.2,1), left .6s cubic-bezier(.2,.8,.2,1), width .6s cubic-bezier(.2,.8,.2,1), height .6s cubic-bezier(.2,.8,.2,1); }
+.spot::before { content: ""; position: absolute; inset: -4px; border-radius: inherit; padding: 3px;
+  background: conic-gradient(from var(--spin), transparent 0 50%, #FFD3E5 66%, #FFFFFF 72%, var(--q2) 80%, transparent 92%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 2.8s linear infinite; }
+.spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; animation: glow 2.4s ease-in-out infinite; }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 22px 4px var(--glow), inset 0 0 18px rgb(255 211 229 / .25); } 50% { box-shadow: 0 0 44px 12px var(--glow), inset 0 0 30px rgb(255 211 229 / .4); } }
+.spot.center::before, .spot.center::after, .spot.center .shine, .spot.center .spark { display: none; }
+.shine { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
+.shine::before { content: ""; position: absolute; top: -30%; bottom: -30%; width: 38%; left: -60%; background: linear-gradient(100deg, transparent, rgb(255 255 255 / .6), transparent); transform: skewX(-18deg); animation: sweep 1.3s .45s cubic-bezier(.3,.6,.2,1) both; }
+@keyframes sweep { to { left: 125%; } }
+.spark { position: absolute; width: 18px; height: 18px; color: #FFFFFF; filter: drop-shadow(0 0 6px var(--q2)); animation: twinkle 1.8s ease-in-out infinite; }
+.spark:nth-of-type(1) { top: -12px; right: -12px; }
+.spark:nth-of-type(2) { bottom: -12px; left: -12px; animation-delay: .6s; width: 14px; height: 14px; }
+.spark:nth-of-type(3) { top: -10px; left: 18%; animation-delay: 1.1s; width: 12px; height: 12px; }
+@keyframes twinkle { 0%, 100% { transform: scale(.4) rotate(0); opacity: .2; } 50% { transform: scale(1) rotate(45deg); opacity: 1; } }
+.card { position: fixed; width: min(380px, calc(100vw - 32px)); background: var(--tile); border-radius: 18px; padding: 18px 18px 14px; box-shadow: 0 24px 60px rgb(0 0 0 / .32);
+  transition: top .6s cubic-bezier(.2,.8,.2,1), left .6s cubic-bezier(.2,.8,.2,1); }
+.card.center { width: min(440px, calc(100vw - 32px)); text-align: center; padding: 26px 24px 18px; }
+.card .body { animation: cardin .45s cubic-bezier(.2,.8,.2,1); }
+@keyframes cardin { from { opacity: 0; transform: translateY(8px); } }
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.card.center .card-top { justify-content: center; }
+.prog { flex: 1; height: 4px; border-radius: 99px; background: var(--faint); overflow: hidden; max-width: 160px; }
+.prog span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--q1), var(--q2)); transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.card h2 { margin: 0 0 6px; font-weight: 800; font-size: 20px; line-height: 1.25; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.card-icon { width: 64px; height: 64px; margin: 0 auto 12px; color: var(--q2); filter: drop-shadow(0 8px 18px rgb(201 63 124 / .4)); animation: float 2.4s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-6px) scale(1.04); } }
+.card-actions { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.card.center .card-actions { justify-content: center; }
+.card-actions .next { border: 0; border-radius: 12px; padding: 10px 20px; background: var(--btn); color: #FFFFFF; font-weight: 700; transition: transform .2s; }
+.card-actions .next:hover { transform: translateY(-1px); }
+.card-actions .prev { border: 1.5px solid var(--border); border-radius: 12px; padding: 8px 14px; background: var(--tile); font-weight: 600; }
+.card-actions .skip { margin-inline-start: auto; border: 0; background: none; color: var(--muted); font-weight: 600; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; padding: 6px; }
+.card.center .card-actions .skip { margin-inline-start: 0; }
+
+@media (max-width: 1020px) {
+  .grid { grid-template-columns: 1fr 1fr; grid-template-areas: "pie pie" "sum heat" "ins dow" "cats cats" "line line" "recent recent"; }
+}
+@media (max-width: 680px) {
+  .page { padding-inline: 16px; }
+  .grid { grid-template-columns: 1fr; grid-template-areas: "pie" "sum" "cats" "line" "heat" "dow" "ins" "recent"; }
+  .two { grid-template-columns: 1fr; }
+  .brand h1 { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .viz .draw { stroke-dashoffset: 0; } .love .love-heart, .love .love-text { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="bar">
+    <div class="brand"><p>מעקב הוצאות- מאי</p><h1 id="hello">ערב טוב מאי, <span>תרצי להוסיף ולעדכן את ההוצאות שלך?</span></h1></div>
+    <div class="ctl">
+      <span class="status" id="status" data-mode="loading" role="status"><span class="dot"></span><span id="status-text">טוען…</span></span>
+      <button type="button" class="chip-btn" id="help"><span data-ic="help" data-s="15"></span>הדרכה</button>
+      <div class="seg" role="group" aria-label="תצוגה לפי"><button type="button" data-mode="week" aria-pressed="false">שבוע</button><button type="button" data-mode="month" aria-pressed="true">חודש</button></div>
+      <div class="per"><button type="button" class="icon-btn" id="prev" aria-label="התקופה הקודמת"></button><p id="period" aria-live="polite"></p><button type="button" class="icon-btn" id="next" aria-label="התקופה הבאה"></button></div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="tile a-sum" aria-labelledby="h-sum"><header class="th"><span class="ic" data-ic="wallet"></span><h2 id="h-sum">סיכום</h2></header><div class="tb" id="sum"></div></section>
+
+    <section class="tile a-pie" aria-labelledby="h-pie"><header class="th"><span class="ic" data-ic="pie"></span><h2 id="h-pie">לאן הכסף הלך</h2></header>
+      <div class="tb">
+        <div class="donut-box" id="donut">
+          <div class="love" id="love" aria-hidden="true" hidden><div class="love-core"><span class="love-heart" data-ic="heartfill" data-s="104"></span><span class="love-text">אוהב אותך מאמי</span></div></div>
+        </div>
+        <div class="legend" id="legend" role="group" aria-label="סינון לפי קטגוריה"></div>
+        <table class="sr-only" id="pie-table"><caption>התפלגות ההוצאות לפי קטגוריה</caption><thead><tr><th>קטגוריה</th><th>סכום</th><th>אחוז</th></tr></thead><tbody></tbody></table>
+        <div class="add-wrap"><button type="button" class="add" id="add" aria-haspopup="dialog"><span data-ic="plus" data-s="20"></span><span>הוספת הוצאה</span></button><span class="add-hint">קיצור מקלדת: <kbd>N</kbd></span></div>
+      </div>
+    </section>
+
+    <section class="tile a-heat" aria-labelledby="h-heat"><header class="th"><span class="ic" data-ic="cal"></span><h2 id="h-heat">לוח שנה</h2><span class="meta">בלי הוצאות דירה</span></header><div class="tb" id="heat"></div></section>
+    <section class="tile a-ins" aria-labelledby="h-ins"><header class="th"><span class="ic" data-ic="bulb"></span><h2 id="h-ins">תובנות</h2></header><div class="tb" id="ins"></div></section>
+    <section class="tile a-dow" aria-labelledby="h-dow"><header class="th"><span class="ic" data-ic="bars"></span><h2 id="h-dow">ימים בשבוע</h2><span class="meta">ממוצע, 12 שבועות</span></header><div class="tb" id="dow"></div></section>
+    <section class="tile a-cats" aria-labelledby="h-cats"><header class="th"><span class="ic" data-ic="grid"></span><h2 id="h-cats">קטגוריות</h2><button type="button" class="head-btn" id="edit-cats" aria-haspopup="dialog"><span data-ic="pencil" data-s="14"></span>עריכת קטגוריות</button></header><div class="tb"><div class="cats" id="cats" role="group" aria-label="קטגוריות"></div></div></section>
+    <section class="tile a-line" aria-labelledby="h-line"><header class="th"><span class="ic" data-ic="trend"></span><h2 id="h-line">קצב ההוצאות</h2><span class="meta">מצטבר</span></header><div class="tb" id="line"></div></section>
+    <section class="tile a-recent" aria-labelledby="h-recent"><header class="th"><span class="ic" data-ic="list"></span><h2 id="h-recent">הוצאות אחרונות</h2><span id="filter-slot" style="margin-inline-start:auto"></span></header><div class="tb"><ul class="tx-list" id="recent"></ul></div></section>
+  </main>
+
+  <dialog id="dlg" aria-labelledby="dlg-title">
+    <form class="dlg" id="form" novalidate>
+      <div class="dlg-head"><h2 id="dlg-title">הוצאה חדשה</h2><button type="button" class="icon-btn" data-close="dlg" aria-label="סגירה"><span data-ic="x"></span></button></div>
+      <div class="dlg-body">
+        <div class="field"><label for="f-amount">סכום</label>
+          <div class="amount"><input id="f-amount" inputmode="decimal" autocomplete="off" placeholder="0" dir="ltr" aria-describedby="err-amount"><span aria-hidden="true">₪</span></div>
+          <p class="err" id="err-amount" aria-live="polite"></p></div>
+        <fieldset class="field"><legend>קטגוריה</legend><div class="pick" id="pick"></div><p class="hint" id="hint" aria-live="polite"></p><p class="err" id="err-cat" aria-live="polite"></p></fieldset>
+        <div class="two">
+          <div class="field"><label for="f-note">על מה? <span class="opt">(לא חובה)</span></label><input class="text-in" id="f-note" list="notes" autocomplete="off" placeholder="למשל: שופרסל, קפה, זארה"><datalist id="notes"></datalist></div>
+          <div class="field"><label for="f-date">תאריך</label><input class="text-in" type="date" id="f-date"></div>
+        </div>
+      </div>
+      <div class="actions"><button type="submit" class="btn" id="save">שמירה</button><button type="button" class="btn danger" id="dlg-delete" hidden>מחיקה</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="cdlg" aria-labelledby="cdlg-title">
+    <form class="dlg" id="cform" novalidate>
+      <div class="dlg-head"><h2 id="cdlg-title">הקטגוריות שלי</h2><button type="button" class="icon-btn" data-close="cdlg" aria-label="סגירה"><span data-ic="x"></span></button></div>
+      <div class="dlg-body">
+        <p class="opt" style="margin:0">לחיצה על הריבוע הצבעוני משנה את הצבע. אפשר גם לשנות שם, ולהוסיף קטגוריה חדשה בשורה האחרונה.</p>
+        <ul class="ce" id="ce"></ul>
+        <p class="err" id="cat-err" aria-live="polite"></p>
+      </div>
+      <div class="actions"><button type="submit" class="btn">שמירה</button><button type="button" class="btn ghost" data-close="cdlg">ביטול</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden><span class="msg"></span><button type="button">ביטול</button></div>
+  <div class="tip" id="tip" hidden aria-hidden="true"></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- icons ----------
+  const P = {
+    pie: '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+    wallet: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
+    cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>',
+    bars: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+    trend: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    list: '<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    right: '<path d="m9 18 6-6-6-6"/>', left: '<path d="m15 18-6-6 6-6"/>',
+    up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
+    trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+    pencil: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+    help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+    home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+    shirt: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+    utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+    dots: '<circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/>',
+    tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
+  };
+  const HEART = 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z';
+  const ic = (n, s = 18) => n === 'heartfill'
+    ? `<svg viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2A0BF"/><stop offset=".55" stop-color="#E8679D"/><stop offset="1" stop-color="#B8336F"/></linearGradient></defs><path d="${HEART}" fill="url(#hg)"/><path d="M7.5 6.2c-1.3.2-2.3 1.2-2.5 2.5" fill="none" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="1.2" stroke-linecap="round"/></svg>`
+    : n === 'heart' ? `<svg viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><path d="${HEART}" fill="currentColor"/></svg>`
+    : n === 'star' ? `<svg viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><path d="M12 0 14 10 24 12 14 14 12 24 10 14 0 12 10 10Z" fill="currentColor"/></svg>`
+    : `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.tag}</svg>`;
+  document.querySelectorAll('[data-ic]').forEach(el => { el.innerHTML = ic(el.dataset.ic, +el.dataset.s || 17); });
+  $('prev').innerHTML = ic('right', 20); $('next').innerHTML = ic('left', 20); // RTL: back points right
+
+  // small hearts that burst out of the big one
+  (function () {
+    const core = document.querySelector('.love-core');
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * Math.PI * 2 + .2, d = 70 + (i % 3) * 22;
+      const m = document.createElement('span'); m.className = 'mini';
+      m.style.setProperty('--dx', Math.cos(a) * d + 'px'); m.style.setProperty('--dy', Math.sin(a) * d - 20 + 'px');
+      m.style.setProperty('--rot', (i % 2 ? 25 : -25) + 'deg'); m.style.setProperty('--delay', (.12 + (i % 4) * .05) + 's');
+      m.innerHTML = ic('heart', 18); core.appendChild(m);
+    }
+  })();
+
+  // ---------- categories (editable, saved with the expenses) ----------
+  const DEFAULT_CATS = [
+    { id: 'apt', name: 'הוצאות דירה', icon: 'home', color: '#B8336F' },
+    { id: 'groc', name: 'קניות אוכל', icon: 'cart', color: '#E8679D' },
+    { id: 'clothes', name: 'בגדים', icon: 'shirt', color: '#F2A0BF' },
+    { id: 'out', name: 'אוכל בחוץ', icon: 'utensils', color: '#E0827A' },
+    { id: 'other', name: 'הוצאות נוספות', icon: 'dots', color: '#B56DB8' }
+  ];
+  const PALETTE = ['#B8336F', '#E8679D', '#F2A0BF', '#E0827A', '#B56DB8', '#8E6BBF', '#5B8DEF', '#3BA99C', '#7BC47F', '#E9B949', '#F08A5D', '#8A94A6'];
+  let CATS = DEFAULT_CATS.map(c => ({ ...c }));
+  const catById = id => CATS.find(c => c.id === id) || CATS[CATS.length - 1];
+  const validCats = list => Array.isArray(list) && list.length > 0 && list.length <= 12 && list.every(c => c && /^[a-z][a-z0-9]{1,15}$/.test(c.id) && typeof c.name === 'string' && c.name.trim() && c.name.length <= 24 && /^#[0-9a-f]{6}$/i.test(c.color));
+  let catsSig = '';
+  function applyCats(list) {
+    const sig = JSON.stringify(list); if (sig === catsSig) return; catsSig = sig;
+    CATS = list.map(c => ({ id: c.id, name: c.name.trim(), color: c.color, icon: P[c.icon] ? c.icon : 'tag' }));
+    CATS.forEach(c => document.documentElement.style.setProperty('--c-' + c.id, c.color));
+    Donut.build(); ui.shown = []; renderPick();
+  }
+
+  // ---------- dates & money ----------
+  const pad = n => String(n).padStart(2, '0');
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const today = () => { const t = new Date(); t.setHours(0, 0, 0, 0); return t; };
+  const dayDiff = (a, b) => Math.round((b - a) / 864e5);
+  const monthKey = s => 'm' + s.slice(0, 7); // one database row per month, e.g. m2026-10
+  const periodOf = (mode, a) => mode === 'week'
+    ? { start: addDays(a, -a.getDay()), end: addDays(a, 6 - a.getDay()) } // Sunday to Saturday
+    : { start: new Date(a.getFullYear(), a.getMonth(), 1), end: new Date(a.getFullYear(), a.getMonth() + 1, 0) };
+  const shift = (mode, a, dir) => mode === 'week' ? addDays(a, 7 * dir) : new Date(a.getFullYear(), a.getMonth() + dir, 1);
+  const fmt0 = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 });
+  const fmt2 = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = (ag, exact) => (exact && ag % 100 ? fmt2 : fmt0).format(ag / 100);
+  const dShort = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short' });
+  const dMonth = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' });
+  const dDay = new Intl.DateTimeFormat('he-IL', { weekday: 'short', day: 'numeric', month: 'short' });
+  const DOW = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
+  const DOW_FULL = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+  const dayLabel = s => { const d = dayDiff(parse(s), today()); return d === 0 ? 'היום' : d === 1 ? 'אתמול' : dDay.format(parse(s)); };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const uid = () => 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const pcts = vals => { const t = vals.reduce((a, b) => a + b, 0); if (!t) return vals.map(() => 0); const raw = vals.map(v => v * 100 / t), fl = raw.map(Math.floor); let rem = 100 - fl.reduce((a, b) => a + b, 0); raw.map((r, i) => [r - fl[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (rem > 0) { fl[i]++; rem--; } }); return fl; };
+
+  // ---------- tour data: a busy month, shown only during the tour, never saved ----------
+  function tourMonths() {
+    let a = 5768; const rnd = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const R = (x, y) => Math.round(x + rnd() * (y - x)) * 100, pick = arr => arr[Math.floor(rnd() * arr.length)];
+    const out = new Map(), t = today(), mStart = iso(new Date(t.getFullYear(), t.getMonth(), 1)); let n = 0;
+    for (let i = 110; i >= 0; i--) {
+      const d = addDays(t, -i), ds = iso(d), dom = d.getDate(), busy = ds >= mStart ? 1.7 : 1;
+      const push = (cat, note, amount) => { const k = monthKey(ds); if (!out.has(k)) out.set(k, {}); out.get(k)['s' + (n++)] = { cat, note, amount, date: ds, ts: d.getTime() + Math.floor(rnd() * 13 + 8) * 36e5 }; };
+      if (dom === 1) push('apt', 'שכר דירה', 260000);
+      if (dom === 6) push('apt', 'ועד בית', 18000);
+      if (dom === 10) push('apt', 'חשמל', R(260, 340));
+      if (dom === 14) push('apt', 'אינטרנט', 9900);
+      if (dom === 25) push('apt', 'ארנונה', 38000);
+      if (rnd() < .4 * busy) push('groc', pick(['שופרסל', 'רמי לוי', 'מכולת ליד הבית', 'שוק', 'יוחננוף']), R(35, 380));
+      if (rnd() < .4 * busy) push('out', pick(['קפה ומאפה', 'ארוחת צהריים', 'סושי עם חברות', 'וולט', 'פיצה']), R(18, 210));
+      if (rnd() < .08 * busy) push('clothes', pick(['זארה', 'H&M', 'קסטרו', 'נעלי ספורט', 'טרמינל X']), R(70, 420));
+      if (rnd() < .15 * busy) push('other', pick(['רב־קו', 'מונית', 'סופר־פארם', 'תספורת', 'מתנה ליום הולדת']), R(10, 260));
+      if (d.getDay() === 4 && rnd() < .6) push('out', 'ארוחת ערב', R(120, 260));
+    }
+    return out;
+  }
+
+  // ---------- the personal link ----------
+  // The secret key travels in the link's #fragment (never sent to any server log) and is remembered on this device.
+  const CFG = window.APP_CONFIG || {};
+  const CONFIGURED = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(CFG.supabaseUrl || '') && !!CFG.supabaseKey && !/YOUR_/.test(CFG.supabaseKey);
+  const WALLET_KEY = (() => {
+    const m = location.hash.match(/k=([A-Za-z0-9_-]{30,})/); let k = m ? m[1] : null;
+    try { if (!k) k = localStorage.getItem('may-key'); } catch (e) { /* storage blocked: the link still works */ }
+    return k; // remembered on this device only after the server accepts it
+  })();
+  if (WALLET_KEY && !location.hash) history.replaceState(null, '', '#k=' + WALLET_KEY); // keep bookmarks complete
+
+  async function rpc(fn, args) {
+    const headers = { 'Content-Type': 'application/json', apikey: CFG.supabaseKey };
+    if (!/^sb_/.test(CFG.supabaseKey)) headers.Authorization = 'Bearer ' + CFG.supabaseKey; // older anon keys
+    const res = await fetch(`${CFG.supabaseUrl}/rest/v1/rpc/${fn}`, { method: 'POST', headers, body: JSON.stringify(args) });
+    if (!res.ok) {
+      let body = {}; try { body = await res.json(); } catch (e) { /* not json */ }
+      const err = new Error(body.message || res.statusText); err.status = res.status; err.code = body.code; throw err;
+    }
+    const text = await res.text(); return text ? JSON.parse(text) : null;
+  }
+
+  // ---------- store: cloud first, with a copy on this device and a queue for offline saves ----------
+  const NS = (WALLET_KEY || 'none').slice(0, 10);
+  const LS = {
+    get(k, d) { try { const v = localStorage.getItem(k + ':' + NS); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k + ':' + NS, JSON.stringify(v)); } catch (e) { /* storage full or blocked */ } }
+  };
+  const Store = {
+    mode: 'loading', touring: false, flushing: false, bad: false, retryT: 0, lastFetch: 0,
+    real: new Map(), loaded: new Set(), pending: [], settings: {}, tour: new Map(),
+    months() { return this.touring ? this.tour : this.real; },
+    all() { const out = []; for (const items of this.months().values()) for (const id in items) out.push({ id, ...items[id] }); return out; },
+    find(id) { for (const [k, items] of this.months()) if (items[id]) return { key: k, item: items[id] }; return null; },
+    init() {
+      const c = LS.get('cache', {});
+      for (const k in (c.months || {})) this.real.set(k, c.months[k]);
+      this.settings = c.settings || {}; this.pending = LS.get('pending', []);
+      this.applyPending();
+      if (validCats(this.settings.cats)) applyCats(this.settings.cats);
+    },
+    saveCache() { const o = {}; for (const [k, v] of this.real) o[k] = v; LS.set('cache', { months: o, settings: this.settings }); LS.set('pending', this.pending); },
+    applyPending() {
+      for (const op of this.pending) {
+        if (op.t === 'put') this.real.set(op.m, { ...(this.real.get(op.m) || {}), [op.id]: op.item });
+        else if (op.t === 'del') { const it = { ...(this.real.get(op.m) || {}) }; delete it[op.id]; this.real.set(op.m, it); }
+        else if (op.t === 'set') this.settings = op.s;
+      }
+    },
+    async need(keys, force) {
+      if (this.bad || !WALLET_KEY) return;
+      const want = force ? keys : keys.filter(k => !this.loaded.has(k));
+      if (!want.length) return;
+      this.lastFetch = Date.now();
+      try {
+        const res = await rpc('wallet_load', { p_key: WALLET_KEY, p_months: want });
+        for (const k of want) { this.real.set(k, { ...(((res && res.months) || {})[k] || {}) }); this.loaded.add(k); }
+        this.settings = (res && res.settings) || {};
+        this.applyPending(); // local changes still on their way win
+        try { localStorage.setItem('may-key', WALLET_KEY); } catch (e) { /* storage blocked */ }
+        this.saveCache(); this.setOnline(true);
+        if (validCats(this.settings.cats)) applyCats(this.settings.cats);
+        scheduleRender();
+      } catch (e) { this.fail(e); }
+    },
+    refresh() { if (Date.now() - this.lastFetch > 20000) { this.flush(); this.need([...new Set([...this.loaded, ...neededMonths()])], true); } },
+    push(op) { this.pending.push(op); this.saveCache(); updateStatus(); this.flush(); },
+    async flush() {
+      if (this.flushing || this.bad || !WALLET_KEY) return;
+      this.flushing = true; updateStatus();
+      let failed = null;
+      while (this.pending.length) {
+        const op = this.pending[0];
+        try {
+          if (op.t === 'put') await rpc('wallet_put', { p_key: WALLET_KEY, p_month: op.m, p_id: op.id, p_item: op.item });
+          else if (op.t === 'del') await rpc('wallet_delete', { p_key: WALLET_KEY, p_month: op.m, p_id: op.id });
+          else if (op.t === 'set') await rpc('wallet_save_settings', { p_key: WALLET_KEY, p_settings: op.s });
+        } catch (e) {
+          if (e.code === '22023') { toast('משהו לא נשמר כי הוא לא תקין.'); } // drop a change the server will never accept
+          else { failed = e; break; }
+        }
+        this.pending.shift(); this.saveCache();
+      }
+      this.flushing = false;
+      if (failed) this.fail(failed); else if (WALLET_KEY) this.setOnline(true);
+    },
+    fail(e) {
+      if (e && (e.code === '28000' || /unknown wallet/.test(e.message || ''))) {
+        this.bad = true;
+        try { if (localStorage.getItem('may-key') === WALLET_KEY) localStorage.removeItem('may-key'); } catch (x) { /* storage blocked */ }
+        showGate('bad'); return;
+      }
+      this.setOnline(false);
+      clearTimeout(this.retryT);
+      this.retryT = setTimeout(() => { this.flush(); this.need(neededMonths()); }, 15000);
+    },
+    setOnline(ok) { this.mode = ok ? 'cloud' : 'offline'; updateStatus(); },
+    put(m, id, item) { this.real.set(m, { ...(this.real.get(m) || {}), [id]: item }); this.push({ t: 'put', m, id, item }); },
+    del(m, id) { const it = { ...(this.real.get(m) || {}) }; delete it[id]; this.real.set(m, it); this.push({ t: 'del', m, id }); },
+    add(item) { const id = uid(); this.put(monthKey(item.date), id, item); return id; },
+    restore(id, item) { this.put(monthKey(item.date), id, item); },
+    remove(id) { const f = this.find(id); if (!f) return null; this.del(f.key, id); return f.item; },
+    edit(id, item) { const f = this.find(id); if (!f) return; if (f.key !== monthKey(item.date)) this.del(f.key, id); this.put(monthKey(item.date), id, item); },
+    saveCats(list) { this.settings = { ...this.settings, cats: list }; this.push({ t: 'set', s: this.settings }); }
+  };
+
+  // months the current view needs: viewed period, previous period, and the last 12 weeks
+  function neededMonths() {
+    const p = periodOf(ui.mode, ui.anchor), prev = periodOf(ui.mode, shift(ui.mode, p.start, -1));
+    const from = [p.start, prev.start, addDays(today(), -84)].reduce((a, b) => a < b ? a : b);
+    const keys = []; let d = new Date(from.getFullYear(), from.getMonth(), 1);
+    while (d <= p.end) { keys.push(monthKey(iso(d))); d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
+    return keys;
+  }
+
+  function updateStatus() {
+    const mode = Store.touring ? 'tour' : (Store.pending.length && Store.mode !== 'offline') ? 'saving' : Store.mode;
+    $('status').dataset.mode = mode;
+    $('status-text').textContent = { loading: 'טוען…', cloud: 'הכל שמור', saving: 'שומר…', offline: 'אין חיבור. יישמר כשיחזור', tour: 'סיור מודרך, נתונים לדוגמה' }[mode];
+  }
+
+  function showGate(kind) {
+    if (Tour.open) Tour.end(true);
+    document.querySelectorAll('dialog[open]').forEach(d => d.close());
+    let g = document.querySelector('.gate');
+    if (!g) { g = document.createElement('div'); g.className = 'gate'; document.body.appendChild(g); }
+    const msg = {
+      config: ['האפליקציה עוד לא מחוברת', 'חסרים פרטי החיבור למסד הנתונים בקובץ config.js.'],
+      nokey: ['צריך את הקישור האישי שלך', 'כדי להיכנס, פתחי את הקישור המלא ששלחו לך. הוא ארוך ומסתיים בקוד אישי.'],
+      bad: ['הקישור לא מוכר', 'נראה שהקישור לא הועתק עד הסוף. פתחי שוב את הקישור המלא ששלחו לך.']
+    }[kind];
+    g.innerHTML = `<div class="gate-card" role="alert"><div class="card-icon">${ic(kind === 'config' ? 'link' : 'heartfill', 64)}</div><h2>${msg[0]}</h2><p>${msg[1]}</p></div>`;
+  }
+
+  // ---------- UI state ----------
+  const ui = { mode: 'month', anchor: today(), sel: null, editing: null, lastAdded: null, lastAddedCat: null, animKey: '', shown: [], dowKey: '' };
+  let renderQueued = false;
+  function scheduleRender() { if (renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); }
+
+  const tip = $('tip');
+  const showTip = (e, s) => { tip.textContent = s; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.hidden = false; };
+  const hideTip = () => { tip.hidden = true; };
+
+  // ---------- donut ----------
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent && parent.appendChild(n); return n; };
+  const Donut = (() => {
+    const box = $('donut');
+    const svg = mk('svg', { viewBox: '0 0 240 240', 'aria-hidden': 'true' });
+    box.prepend(svg);
+    mk('circle', { cx: 120, cy: 120, r: 88, fill: 'none', stroke: 'var(--faint)', 'stroke-width': 22 }, svg);
+    const g = mk('g', { transform: 'rotate(-90 120 120)' }, svg);
+    const R = 88, SW = 22, C = 2 * Math.PI * R, GAP = 4;
+    let hover = null, vals = [], tween = null, segs = [];
+    const mid = document.createElement('div'); mid.className = 'donut-center'; box.appendChild(mid);
+    function build() {
+      g.innerHTML = ''; vals = CATS.map(() => 0); hover = null;
+      segs = CATS.map((c, i) => {
+        const s = mk('circle', { class: 'seg-arc', cx: 120, cy: 120, r: R, fill: 'none', stroke: `var(--c-${c.id})`, 'stroke-width': SW, 'stroke-linecap': 'round', 'stroke-dasharray': `0.01 ${C}`, opacity: 0 }, g);
+        s.addEventListener('mouseenter', () => { hover = i; center(); });
+        s.addEventListener('mouseleave', () => { hover = null; center(); });
+        s.addEventListener('click', () => { ui.sel = ui.sel === c.id ? null : c.id; render(); });
+        return s;
+      });
+    }
+    function center() {
+      const t = vals.reduce((a, b) => a + b, 0), p = pcts(vals);
+      const i = hover != null ? hover : ui.sel ? CATS.findIndex(c => c.id === ui.sel) : -1;
+      if (t < 1) mid.innerHTML = `<b class="num">${money(0)}</b><small>עוד אין הוצאות</small>`;
+      else if (i >= 0 && CATS[i]) mid.innerHTML = `<b class="num">${p[i]}%</b><small>${esc(CATS[i].name)}<br><span class="num">${money(Math.round(vals[i]))}</span></small>`;
+      else mid.innerHTML = `<b class="num">${money(Math.round(t))}</b><small>${ui.mode === 'week' ? 'השבוע' : 'החודש'}</small>`;
+    }
+    function draw(v) {
+      vals = v; const t = v.reduce((a, b) => a + b, 0); let off = 0;
+      segs.forEach((s, i) => {
+        const len = t ? v[i] / t * C : 0;
+        s.setAttribute('stroke-dasharray', `${Math.max(.01, len - SW - GAP)} ${C}`);
+        s.setAttribute('stroke-dashoffset', -(off + SW / 2 + GAP / 2));
+        s.setAttribute('opacity', len > 1 ? 1 : 0);
+        s.classList.toggle('dim', !!ui.sel && ui.sel !== CATS[i].id);
+        s.classList.toggle('on', ui.sel === CATS[i].id);
+        off += len;
+      });
+      center();
+    }
+    return {
+      build,
+      set(target, popId) {
+        const from = vals.length === target.length ? vals.slice() : target.map(() => 0), t0 = performance.now(), dur = reduced ? 1 : 900;
+        if (tween) cancelAnimationFrame(tween);
+        const pi = CATS.findIndex(c => c.id === popId);
+        if (pi >= 0 && segs[pi] && !reduced) { const s = segs[pi]; s.classList.remove('pulse'); void s.getBBox(); s.classList.add('pulse'); }
+        const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); draw(from.map((f, i) => f + (target[i] - f) * e)); if (k < 1) tween = requestAnimationFrame(step); };
+        tween = requestAnimationFrame(step);
+      },
+      refresh() { draw(vals); }
+    };
+  })();
+  Donut.build();
+
+  // ---------- pace chart ----------
+  const niceMax = v => { if (v <= 0) return 100000; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; };
+  function lineChart(cur, prev, labels, n, isCur, animate) {
+    const W = 760, H = 230, L = 10, R = W - 52, T = 14, B = 196;
+    const maxY = niceMax(Math.max(cur[cur.length - 1] || 0, prev[prev.length - 1] || 0) * 1.05);
+    const x = i => R - i / Math.max(1, n - 1) * (R - L), y = v => B - v / maxY * (B - T);
+    const path = a => a.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+    let s = `<svg class="viz" viewBox="0 0 ${W} ${H}" role="img" aria-label="סך ההוצאות המצטבר בתקופה הזאת לעומת הקודמת">`;
+    for (let k = 0; k <= 4; k++) { const v = maxY * k / 4; s += `<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${R + 8}" y="${y(v) + 4}">${v >= 100000 ? (v / 100000).toLocaleString('he-IL') + 'K' : Math.round(v / 100)}</text>`; }
+    labels.forEach(([i, l]) => { s += `<text x="${x(i)}" y="${B + 22}" text-anchor="middle">${l}</text>`; });
+    if (prev.length) s += `<path d="${path(prev)}" fill="none" stroke="var(--last)" stroke-width="2" stroke-dasharray="5 4"/>`;
+    if (cur.length) {
+      s += `<path d="${path(cur)}L${x(cur.length - 1)},${B}L${x(0)},${B}Z" fill="var(--s1)"/>`;
+      s += `<path class="${animate ? 'draw' : ''}" d="${path(cur)}" fill="none" stroke="var(--line)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      const li = cur.length - 1;
+      s += `<circle cx="${x(li)}" cy="${y(cur[li])}" r="5" fill="var(--line)" stroke="#FFFFFF" stroke-width="2"/><text class="strong num" x="${x(li) - 10}" y="${y(cur[li]) - 10}" text-anchor="end">${money(cur[li])}</text>`;
+    }
+    s += `<line id="cross" y1="${T}" y2="${B}" stroke="var(--ink)" stroke-width="1" opacity="0"/><rect id="line-hit" x="${L}" y="${T}" width="${R - L}" height="${B - T}" fill="transparent"/></svg>`;
+    s += `<div class="legend-line"><span><i style="background:var(--line)"></i>${isCur ? 'עד היום' : 'התקופה הזאת'}</span><span><i style="background:var(--last)"></i>התקופה הקודמת</span></div>`;
+    return { html: s, x, R, L };
+  }
+
+  function forecast(cur, p, elapsed) {
+    const apt = cur.m.apt || 0, dim = dayDiff(p.start, p.end) + 1;
+    return Math.round((apt + (cur.total - apt) / elapsed * dim) / 10000) * 10000;
+  }
+  function greeting() { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'בוקר טוב' : h >= 12 && h < 17 ? 'צהריים טובים' : 'ערב טוב'; }
+
+  // ---------- render ----------
+  function render() {
+    const { mode } = ui, p = periodOf(mode, ui.anchor), t = today(), ti = iso(t);
+    const ps = iso(p.start), pe = iso(p.end), isCur = ti >= ps && ti <= pe;
+    document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    $('period').textContent = mode === 'month' ? dMonth.format(p.start) : `${dShort.format(p.start)} – ${dShort.format(p.end)}`;
+    $('next').disabled = isCur;
+    $('hello').innerHTML = `${greeting()} מאי, <span>תרצי להוסיף ולעדכן את ההוצאות שלך?</span>`;
+
+    const all = Store.all();
+    const sumBy = (a, b) => { const m = {}; let total = 0, count = 0; for (const x of all) if (x.date >= a && x.date <= b) { m[x.cat] = (m[x.cat] || 0) + x.amount; total += x.amount; count++; } return { m, total, count }; };
+    const cur = sumBy(ps, pe);
+    const prevP = periodOf(mode, shift(mode, p.start, -1));
+    let prevEnd = prevP.end; if (isCur) { const e2 = addDays(prevP.start, dayDiff(p.start, t)); if (e2 < prevP.end) prevEnd = e2; }
+    const prev = sumBy(iso(prevP.start), iso(prevEnd));
+    const prevWord = mode === 'week' ? 'בשבוע שעבר' : 'בחודש שעבר';
+    const cmp = isCur ? `מאותה נקודה ${prevWord}` : (mode === 'week' ? 'מהשבוע הקודם' : 'מהחודש הקודם');
+    const animKey = mode + ps + Store.touring, animate = animKey !== ui.animKey && !reduced; ui.animKey = animKey;
+    const vals = CATS.map(c => cur.m[c.id] || 0), pc = pcts(vals);
+    if (ui.sel && !(cur.m[ui.sel] > 0)) ui.sel = null;
+    const elapsed = isCur ? dayDiff(p.start, t) + 1 : dayDiff(p.start, p.end) + 1;
+
+    // summary
+    let delta = '';
+    if (prev.total > 0) { const d = Math.round((cur.total - prev.total) / prev.total * 100); delta = d === 0 ? `<span class="delta">כמו ${prevWord}</span>` : `<span class="delta ${d > 0 ? 'more' : 'less'}">${ic(d > 0 ? 'up' : 'down', 14)}${Math.abs(d)}% ${d > 0 ? 'יותר' : 'פחות'} ${cmp}</span>`; }
+    $('h-sum').textContent = mode === 'week' ? (isCur ? 'הוצאת השבוע' : 'הוצאות השבוע') : (isCur ? 'הוצאת החודש' : 'הוצאות החודש');
+    $('sum').innerHTML = `<p class="big num">${money(cur.total)}</p>${delta}<div class="kv"><span>ממוצע ליום<b class="num">${money(Math.round(cur.total / elapsed))}</b></span><span>מספר הוצאות<b class="num">${cur.count}</b></span>${mode === 'month' && isCur && cur.total ? `<span>צפי לסוף החודש<b class="num">${money(forecast(cur, p, elapsed))}</b></span>` : ''}</div>`;
+
+    // donut, legend, table
+    if (vals.length !== ui.shown.length || vals.some((v, i) => v !== ui.shown[i])) { Donut.set(vals, ui.lastAddedCat); ui.shown = vals.slice(); } else Donut.refresh();
+    ui.lastAddedCat = null;
+    $('legend').innerHTML = CATS.map(c => `<button type="button" data-cat="${c.id}" aria-pressed="${ui.sel === c.id}"><i style="background:var(--c-${c.id})"></i>${esc(c.name)}</button>`).join('');
+    $('pie-table').tBodies[0].innerHTML = CATS.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${money(vals[i])}</td><td>${pc[i]}%</td></tr>`).join('');
+
+    // categories
+    $('cats').innerHTML = CATS.map((c, i) => {
+      const b = prev.m[c.id] || 0; let d = `<span class="cat-d">&nbsp;</span>`;
+      if (b > 0) { const k = Math.round((vals[i] - b) / b * 100); d = k === 0 ? `<span class="cat-d">כמו ${prevWord}</span>` : `<span class="cat-d ${k > 0 ? 'more' : 'less'}">${k > 0 ? '▲' : '▼'} ${Math.abs(k)}% ${cmp}</span>`; }
+      return `<button type="button" class="cat" data-cat="${c.id}" aria-pressed="${ui.sel === c.id}" aria-label="${esc(c.name)}: ${money(vals[i])}, ${pc[i]} אחוז"><span class="cat-n"><i style="background:var(--c-${c.id})"></i><span>${esc(c.name)}</span></span><span class="cat-p num">${pc[i]}%</span><span class="cat-a num">${money(vals[i])}</span><span class="cat-bar"><span style="width:${pc[i]}%;background:var(--c-${c.id})"></span></span>${d}</button>`;
+    }).join('');
+
+    // pace: cumulative spending, day 1 on the right
+    const byDay = {}; for (const x of all) byDay[x.date] = (byDay[x.date] || 0) + x.amount;
+    const cumOf = (start, days, upto) => { const arr = []; let acc = 0; for (let i = 0; i < days; i++) { const ds = iso(addDays(start, i)); if (upto && ds > upto) break; acc += byDay[ds] || 0; arr.push(acc); } return arr; };
+    const curDays = dayDiff(p.start, p.end) + 1, prevDays = dayDiff(prevP.start, prevP.end) + 1, n = Math.max(curDays, prevDays);
+    const curCum = cumOf(p.start, curDays, isCur ? ti : null), prevCum = cumOf(prevP.start, prevDays, null);
+    const labels = mode === 'week' ? DOW.map((d, i) => [i, d]) : [0, 7, 14, 21, 28].map(i => [i, String(i + 1)]);
+    if (cur.total || prevCum[prevCum.length - 1]) {
+      const lc = lineChart(curCum, prevCum, labels, n, isCur, animate);
+      $('line').innerHTML = lc.html;
+      const hit = $('line-hit'), svg = hit.ownerSVGElement, cross = $('cross');
+      hit.addEventListener('mousemove', e => {
+        const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * 760;
+        const i = Math.max(0, Math.min(n - 1, Math.round((lc.R - px) / (lc.R - lc.L) * (n - 1))));
+        cross.setAttribute('x1', lc.x(i)); cross.setAttribute('x2', lc.x(i)); cross.setAttribute('opacity', .35);
+        const lab = mode === 'week' ? 'יום ' + DOW_FULL[i] : (i + 1) + ' בחודש';
+        showTip(e, `${lab} · התקופה הזאת: ${curCum[i] != null ? money(curCum[i]) : 'עוד לא'} · הקודמת: ${prevCum[i] != null ? money(prevCum[i]) : 'אין'}`);
+      });
+      hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); hideTip(); });
+    } else $('line').innerHTML = '<p class="empty">כשיהיו הוצאות, כאן יופיע הקצב לאורך התקופה לעומת התקופה הקודמת.</p>';
+
+    // calendar of the viewed month
+    const mStart = new Date(ui.anchor.getFullYear(), ui.anchor.getMonth(), 1);
+    const dim = new Date(mStart.getFullYear(), mStart.getMonth() + 1, 0).getDate();
+    const daily = Array(dim).fill(0);
+    for (const x of all) if (x.cat !== 'apt') { const d = parse(x.date); if (d.getFullYear() === mStart.getFullYear() && d.getMonth() === mStart.getMonth()) daily[d.getDate() - 1] += x.amount; }
+    const dmax = Math.max(...daily, 1);
+    let hh = `<div class="heat" role="img" aria-label="לוח שנה של ${dMonth.format(mStart)}, כל יום צבוע לפי סכום ההוצאה">` + DOW.map(d => `<span class="d">${d}</span>`).join('') + '<span></span>'.repeat(mStart.getDay());
+    for (let d = 1; d <= dim; d++) {
+      const ds = iso(new Date(mStart.getFullYear(), mStart.getMonth(), d)), v = daily[d - 1];
+      const inWeek = mode === 'week' && ds >= ps && ds <= pe;
+      if (ds > ti) { hh += `<span class="c f ${inWeek ? 'w' : ''}">${d}</span>`; continue; }
+      const bin = v ? Math.min(4, Math.floor(v / dmax * 5)) : -1;
+      hh += `<span class="c ${animate ? 'anim' : ''} ${bin >= 3 ? 'k' : ''} ${ds === ti ? 't' : ''} ${inWeek ? 'w' : ''}" style="${bin >= 0 ? `background:var(--s${bin + 1});` : ''}animation-delay:${d * .02}s" data-tip="${dShort.format(parse(ds))}: ${money(v)}">${d}</span>`;
+    }
+    $('heat').innerHTML = hh + '</div><div class="ramp" aria-hidden="true">פחות<i style="background:var(--s1)"></i><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i><i style="background:var(--s4)"></i><i style="background:var(--s5)"></i>יותר</div>';
+
+    // weekdays: last 12 weeks, without apartment costs
+    const from = iso(addDays(t, -83)), wsum = Array(7).fill(0);
+    for (const x of all) if (x.cat !== 'apt' && x.date >= from && x.date <= ti) wsum[parse(x.date).getDay()] += x.amount;
+    const wavg = wsum.map(v => Math.round(v / 12)), wmax = Math.max(...wavg), top = wavg.indexOf(wmax);
+    if (wmax > 0) {
+      const W = 330, H = 200, B = 172, T = 24, slot = W / 7, bw = 30, ymax = niceMax(wmax * 1.1);
+      const rise = ui.dowKey !== String(Store.touring) && !reduced; ui.dowKey = String(Store.touring);
+      let s = `<svg class="viz" viewBox="0 0 ${W} ${H}" role="img" aria-label="ממוצע הוצאה לפי יום בשבוע. הכי גבוה ביום ${DOW_FULL[top]}"><line x1="0" x2="${W}" y1="${B}" y2="${B}" stroke="var(--border)"/>`;
+      wavg.forEach((v, i) => {
+        const cx = W - slot * (i + .5), hgt = v / ymax * (B - T);
+        s += `<rect class="${rise ? 'rise' : ''}" style="animation-delay:${i * .06}s" x="${cx - bw / 2}" y="${B - hgt}" width="${bw}" height="${Math.max(hgt, .5)}" rx="4" fill="var(${i === top ? '--s5' : '--s3'})" data-tip="יום ${DOW_FULL[i]}: ${money(v)} בממוצע"></rect><text x="${cx}" y="${B + 18}" text-anchor="middle">${DOW[i]}</text>`;
+        if (i === top) s += `<text class="strong num" x="${cx}" y="${B - hgt - 8}" text-anchor="middle">${money(v)}</text>`;
+      });
+      $('dow').innerHTML = s + '</svg>';
+    } else $('dow').innerHTML = '<p class="empty">אחרי כמה שבועות של הוצאות, יופיע כאן באיזה יום את מוציאה הכי הרבה.</p>';
+
+    // insights
+    const ins = [];
+    const ranked = CATS.map((c, i) => ({ c, v: vals[i], p: pc[i] })).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+    if (ranked.length) ins.push(['bulb', `החלק הגדול הולך על <b>${esc(ranked[0].c.name)}</b>: ${ranked[0].p}% מההוצאות ${mode === 'week' ? 'השבוע' : 'החודש'}`]);
+    let best = null;
+    for (const c of CATS) { const a = cur.m[c.id] || 0, b = prev.m[c.id] || 0; if (b > 0 && Math.abs(a - b) >= 5000) { const ch = (a - b) / b; if (Math.abs(ch) >= .2 && (!best || Math.abs(ch) > Math.abs(best.ch))) best = { c, ch }; } }
+    if (best) ins.push([best.ch > 0 ? 'up' : 'down', `על <b>${esc(best.c.name)}</b> הוצאת ${Math.round(Math.abs(best.ch) * 100)}% ${best.ch > 0 ? 'יותר' : 'פחות'} ${cmp}`]);
+    if (mode === 'month' && isCur && cur.total) ins.push(['trend', `בקצב הנוכחי, החודש ייסגר בערך ב־<b class="num">${money(forecast(cur, p, elapsed))}</b>`]);
+    if (wmax > 0) ins.push(['cal', `ימי ${DOW_FULL[top]} הם הימים היקרים שלך, <b class="num">${money(wmax)}</b> בממוצע`]);
+    $('ins').innerHTML = ins.length ? `<ul class="ins">${ins.slice(0, 4).map(([i, s]) => `<li><span class="ic">${ic(i, 15)}</span><span>${s}</span></li>`).join('')}</ul>` : '<p class="empty">כשיהיו כמה הוצאות, יופיעו כאן תובנות.</p>';
+
+    // recent, filtered by the selected category
+    const sc = ui.sel ? catById(ui.sel) : null;
+    $('filter-slot').innerHTML = sc ? `<button type="button" class="filter" id="clear-filter" aria-label="הסרת הסינון">${esc(sc.name)} ${ic('x', 13)}</button>` : '';
+    const list = all.filter(x => x.date >= ps && x.date <= pe && (!sc || x.cat === sc.id)).sort((a, b) => b.date.localeCompare(a.date) || b.ts - a.ts);
+    $('recent').innerHTML = list.length ? list.map(x => {
+      const c = catById(x.cat), title = x.note || c.name;
+      return `<li class="tx ${ui.lastAdded === x.id ? 'new' : ''}"><button type="button" class="tx-open" data-edit="${x.id}" aria-label="עריכת ${esc(title)}, ${money(x.amount, true)}"><i style="background:var(--c-${c.id})"></i><span class="tx-main"><span>${esc(title)}</span><small>${esc(c.name)} · ${dayLabel(x.date)}</small></span><b class="num">${money(x.amount, true)}</b></button><button type="button" class="icon-btn" data-del="${x.id}" aria-label="מחיקת ${esc(title)}">${ic('trash', 16)}</button></li>`;
+    }).join('') : `<li><p class="empty">${all.length ? 'אין הוצאות' + (sc ? ' ב' + esc(sc.name) : '') + ' בתקופה הזאת' : 'עוד אין הוצאות. לחצי על "הוספת הוצאה" כדי להתחיל.'}</p></li>`;
+    ui.lastAdded = null;
+  }
+
+  // ---------- tooltips on data cells ----------
+  document.addEventListener('mousemove', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (el) showTip(e, el.dataset.tip); else if (!(e.target.closest && e.target.closest('#line-hit'))) hideTip();
+  });
+
+  // ---------- navigation ----------
+  function go(anchor) { ui.anchor = anchor; Store.need(neededMonths()); render(); }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.close) { $(b.dataset.close).close(); return; }
+    if (b.closest('#ce')) return; // handled by the category editor
+    if (b.dataset.mode) { ui.mode = b.dataset.mode; go(today()); }
+    else if (b.id === 'prev') go(shift(ui.mode, periodOf(ui.mode, ui.anchor).start, -1));
+    else if (b.id === 'next') { const nx = shift(ui.mode, periodOf(ui.mode, ui.anchor).start, 1); go(nx > today() ? today() : nx); }
+    else if (b.dataset.cat) { ui.sel = ui.sel === b.dataset.cat ? null : b.dataset.cat; render(); }
+    else if (b.id === 'clear-filter') { ui.sel = null; render(); }
+    else if (b.id === 'add') openDialog(null);
+    else if (b.dataset.edit) openDialog(b.dataset.edit);
+    else if (b.dataset.del) removeExpense(b.dataset.del);
+    else if (b.id === 'dlg-delete') { const id = ui.editing; dlg.close(); removeExpense(id); }
+    else if (b.id === 'edit-cats') openCats();
+    else if (b.id === 'help') Tour.start();
+  });
+  document.addEventListener('keydown', e => {
+    if (Tour.open || Store.bad) return;
+    if (e.code === 'KeyN' && !e.ctrlKey && !e.metaKey && !e.altKey && !document.querySelector('dialog[open]') && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); openDialog(null); }
+  });
+
+  function removeExpense(id) {
+    const item = Store.remove(id); if (!item) return;
+    render();
+    toast(`נמחק: ${item.note || catById(item.cat).name}`, () => { Store.restore(id, item); ui.lastAddedCat = item.cat; render(); });
+  }
+
+  // a new day while the page is open: move "today" forward so tracking stays current
+  let lastDay = iso(today());
+  function checkDay() {
+    const d = iso(today()); if (d === lastDay) return;
+    const p = periodOf(ui.mode, ui.anchor), wasCurrent = lastDay >= iso(p.start) && lastDay <= iso(p.end);
+    lastDay = d; if (wasCurrent) ui.anchor = today();
+    Store.need(neededMonths()); render();
+  }
+  setInterval(() => { checkDay(); if (!document.hidden) Store.refresh(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkDay(); Store.refresh(); } });
+  addEventListener('online', () => { Store.flush(); Store.need(neededMonths(), true); });
+
+  // ---------- toast ----------
+  let toastTimer;
+  function toast(msg, undo) {
+    const el = $('toast'), b = el.querySelector('button');
+    el.querySelector('.msg').textContent = msg; b.hidden = !undo;
+    b.onclick = () => { if (undo) undo(); hideToast(); };
+    el.hidden = false; requestAnimationFrame(() => el.classList.add('show'));
+    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 5500);
+  }
+  function hideToast() { const el = $('toast'); el.classList.remove('show'); setTimeout(() => { if (!el.classList.contains('show')) el.hidden = true; }, 260); }
+
+  // ---------- heart ----------
+  let loveTimer;
+  function love() {
+    const el = $('love');
+    el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+    clearTimeout(loveTimer); loveTimer = setTimeout(() => { el.hidden = true; el.classList.remove('go'); }, reduced ? 1800 : 2400);
+  }
+
+  // ---------- add / edit dialog ----------
+  const dlg = $('dlg'), form = $('form'), fAmount = $('f-amount'), fNote = $('f-note'), fDate = $('f-date'), hint = $('hint');
+  function renderPick() { $('pick').innerHTML = CATS.map(c => `<div><input type="radio" name="cat" id="cat-${c.id}" value="${c.id}" aria-describedby="err-cat"><label for="cat-${c.id}"><span class="bub" style="background:var(--c-${c.id})">${ic(c.icon, 17)}</span>${esc(c.name)}</label></div>`).join(''); }
+  renderPick();
+  let catTouched = false, opener = null;
+  function openDialog(id) {
+    if (Tour.open || Store.bad) return;
+    opener = document.activeElement;
+    renderPick();
+    form.reset(); hint.textContent = ''; $('err-amount').textContent = ''; $('err-cat').textContent = ''; fAmount.removeAttribute('aria-invalid');
+    const f = id ? Store.find(id) : null, x = f ? f.item : null;
+    ui.editing = x ? id : null; catTouched = !!x;
+    $('dlg-title').textContent = x ? 'עריכת הוצאה' : 'הוצאה חדשה';
+    $('save').textContent = x ? 'שמירת השינויים' : 'שמירה';
+    $('dlg-delete').hidden = !x;
+    fDate.max = iso(today()); fDate.value = x ? x.date : iso(today());
+    if (x) { fAmount.value = String(x.amount / 100); fNote.value = x.note || ''; const r = $('cat-' + x.cat); if (r) r.checked = true; }
+    const freq = {}; Store.all().forEach(e => { if (e.note) freq[e.note] = (freq[e.note] || 0) + 1; });
+    $('notes').innerHTML = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 40).map(n => `<option value="${esc(n)}"></option>`).join('');
+    dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
+    setTimeout(() => fAmount.focus(), 20);
+  }
+  dlg.addEventListener('close', () => { if (opener && opener.focus) opener.focus(); });
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  form.addEventListener('change', e => { if (e.target.name === 'cat') { catTouched = true; hint.textContent = ''; $('err-cat').textContent = ''; } });
+  // smart category: pick what this note was usually filed under
+  fNote.addEventListener('input', () => {
+    if (catTouched) return;
+    const q = fNote.value.trim(); if (q.length < 2) { hint.textContent = ''; return; }
+    const counts = {}; Store.all().forEach(x => { if (x.note && x.note.startsWith(q)) counts[x.cat] = (counts[x.cat] || 0) + 1; });
+    const topCat = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).find(id => $('cat-' + id));
+    if (topCat) { $('cat-' + topCat).checked = true; hint.textContent = `סימנתי "${catById(topCat).name}" לפי הוצאות קודמות`; $('err-cat').textContent = ''; } else hint.textContent = '';
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const amount = Math.round(parseFloat(fAmount.value.trim().replace(/,/g, '.').replace(/[^\d.]/g, '')) * 100);
+    const cat = (form.querySelector('input[name=cat]:checked') || {}).value;
+    const ok = amount > 0 && amount <= 10000000;
+    $('err-amount').textContent = ok ? '' : (amount > 10000000 ? 'אפשר עד 100,000 ₪ להוצאה אחת' : 'כתבי סכום גדול מ־0, למשל 45 או 45.90');
+    ok ? fAmount.removeAttribute('aria-invalid') : fAmount.setAttribute('aria-invalid', 'true');
+    $('err-cat').textContent = cat ? '' : 'בחרי קטגוריה';
+    if (!ok) { fAmount.focus(); return; }
+    if (!cat) { $('cat-' + CATS[0].id).focus(); return; }
+    const date = fDate.value && fDate.value <= iso(today()) ? fDate.value : iso(today());
+    const item = { cat, amount, note: fNote.value.trim().slice(0, 80), date, ts: Date.now() };
+    const editing = ui.editing; dlg.close();
+    const p = periodOf(ui.mode, ui.anchor);
+    if (date < iso(p.start) || date > iso(p.end)) { ui.anchor = parse(date); Store.need(neededMonths()); }
+    ui.lastAddedCat = cat;
+    if (editing) {
+      const before = { ...Store.find(editing).item }; Store.edit(editing, item); ui.lastAdded = editing; render();
+      toast('השינויים נשמרו', () => { Store.edit(editing, before); render(); });
+    } else {
+      const id = Store.add(item); ui.lastAdded = id; render(); love();
+      toast(`נשמר: ${money(amount, true)} ב${catById(cat).name}`, () => { Store.remove(id); render(); });
+    }
+  });
+
+  // ---------- category editor ----------
+  const cdlg = $('cdlg'), cform = $('cform');
+  let draft = [], newCat = null, palFor = null;
+  function openCats() {
+    if (Tour.open || Store.bad) return;
+    draft = CATS.map(c => ({ ...c }));
+    newCat = { name: '', color: PALETTE.find(p => !draft.some(c => c.color.toLowerCase() === p.toLowerCase())) || PALETTE[5] };
+    palFor = null; $('cat-err').textContent = ''; renderCats();
+    cdlg.showModal ? cdlg.showModal() : cdlg.setAttribute('open', '');
+  }
+  function pullNames() {
+    $('ce').querySelectorAll('[data-name]').forEach(inp => { draft[+inp.dataset.name].name = inp.value; });
+    const nn = $('new-cat-name'); if (nn) newCat.name = nn.value;
+  }
+  const palette = (k, cur) => `<li class="palette" role="group" aria-label="בחירת צבע">${PALETTE.map(col => `<button type="button" class="pal" data-set="${k}" data-color="${col}" style="background:${col}" aria-label="צבע ${col}" aria-pressed="${cur.toLowerCase() === col.toLowerCase()}"></button>`).join('')}<label class="pal-custom">צבע אחר<input type="color" data-custom="${k}" value="${cur}"></label></li>`;
+  function renderCats() {
+    $('ce').innerHTML = draft.map((c, i) => `<li class="ce-row"><button type="button" class="swatch" data-pal="${i}" style="background:${c.color}" aria-label="שינוי הצבע של ${esc(c.name)}" aria-expanded="${palFor === String(i)}"></button><input class="text-in" data-name="${i}" value="${esc(c.name)}" maxlength="24" aria-label="שם הקטגוריה"></li>${palFor === String(i) ? palette(i, c.color) : ''}`).join('')
+      + (draft.length < 12 ? `<li class="ce-row ce-new"><button type="button" class="swatch" data-pal="new" style="background:${newCat.color}" aria-label="בחירת צבע לקטגוריה החדשה" aria-expanded="${palFor === 'new'}"></button><input class="text-in" id="new-cat-name" value="${esc(newCat.name)}" maxlength="24" placeholder="הוספת קטגוריה חדשה, למשל: חיות מחמד" aria-label="שם לקטגוריה חדשה"></li>${palFor === 'new' ? palette('new', newCat.color) : ''}` : '');
+  }
+  const setColor = (k, col) => { if (k === 'new') newCat.color = col; else draft[+k].color = col; };
+  $('ce').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    pullNames();
+    if (b.dataset.pal != null) { palFor = palFor === b.dataset.pal ? null : b.dataset.pal; renderCats(); }
+    else if (b.dataset.set != null) { setColor(b.dataset.set, b.dataset.color); renderCats(); }
+  });
+  $('ce').addEventListener('input', e => {
+    const k = e.target.dataset && e.target.dataset.custom; if (k == null) return;
+    setColor(k, e.target.value);
+    const sw = $('ce').querySelector(`[data-pal="${k}"]`); if (sw) sw.style.background = e.target.value;
+  });
+  cform.addEventListener('submit', e => {
+    e.preventDefault(); pullNames();
+    const list = draft.map(c => ({ ...c, name: c.name.trim() }));
+    if (newCat.name.trim()) list.push({ id: 'c' + Date.now().toString(36), name: newCat.name.trim(), color: newCat.color, icon: 'tag' });
+    const names = list.map(c => c.name);
+    if (names.some(n => !n)) { $('cat-err').textContent = 'לכל קטגוריה צריך שם.'; return; }
+    if (new Set(names).size !== names.length) { $('cat-err').textContent = 'יש שתי קטגוריות עם אותו שם. בחרי שם אחר לאחת מהן.'; return; }
+    if (!validCats(list)) { $('cat-err').textContent = 'משהו בקטגוריות לא תקין. נסי שוב.'; return; }
+    applyCats(list); Store.saveCats(list); cdlg.close(); render();
+    toast('הקטגוריות נשמרו');
+  });
+
+  // ---------- guided tour, every time the app opens ----------
+  const STEPS = [
+    { center: true, icon: 'heartfill', t: `${greeting()} מאי`, x: 'סיור קצר על הדשבורד שלך, עם חודש מלא בהוצאות לדוגמה. אפשר לדלג בכל רגע.' },
+    { el: ['.ctl .seg', '.ctl .per'], t: 'שבוע או חודש', x: 'כאן בוחרים אם לראות את השבוע או את החודש, ועוברים לתקופות קודמות בחיצים.' },
+    { el: ['#donut'], t: 'לאן הכסף הלך', x: 'כל צבע הוא קטגוריה. מעבר עם העכבר מראה את הסכום, ולחיצה מסננת את ההוצאות לפי הקטגוריה.' },
+    { el: ['.add-wrap'], t: 'הוספת הוצאה', x: 'לוחצים כאן או על המקש N, כותבים סכום ובוחרים קטגוריה. וזהו, זה נשמר.' },
+    { el: ['.a-sum'], t: 'הסיכום', x: 'כמה הוצאת עד עכשיו, והשוואה לאותה נקודה בחודש שעבר.' },
+    { el: ['.a-cats'], t: 'קטגוריות', x: 'האחוז והסכום של כל קטגוריה. ב"עריכת קטגוריות" אפשר להוסיף קטגוריה חדשה ולבחור לה צבע.' },
+    { el: ['.a-line'], t: 'קצב ההוצאות', x: 'הקו הוורוד הוא התקופה הזאת והמקווקו הוא הקודמת. אם הוורוד גבוה יותר, את מוציאה מהר יותר.' },
+    { el: ['.a-heat', '.a-dow'], t: 'לוח שנה וימים בשבוע', x: 'כל יום צבוע לפי כמה הוצאת בו, ולמטה רואים באיזה יום בשבוע יוצא הכי הרבה כסף.' },
+    { el: ['.a-recent'], t: 'הוצאות אחרונות', x: 'לחיצה על הוצאה פותחת אותה לעריכה. הפח מוחק, ואפשר לבטל אם התחרטת.' },
+    { center: true, icon: 'star', t: 'זהו, אפשר להתחיל', x: 'הנתונים בסיור היו לדוגמה. עכשיו תראי את ההוצאות האמיתיות שלך.', last: true }
+  ];
+  const Tour = {
+    open: false, i: 0, root: null, spot: null, card: null, raf: 0, onKey: null,
+    start() {
+      if (this.open || Store.bad) return;
+      document.querySelectorAll('dialog[open]').forEach(d => d.close());
+      this.open = true; this.i = 0;
+      Store.tour = tourMonths(); Store.touring = true;
+      ui.mode = 'month'; ui.anchor = today(); ui.sel = null; updateStatus(); render();
+      this.root = document.createElement('div'); this.root.className = 'tour';
+      this.root.innerHTML = `<div class="spot center"><div class="shine"></div><span class="spark">${ic('star', 18)}</span><span class="spark">${ic('star', 14)}</span><span class="spark">${ic('star', 12)}</span></div><div class="card" role="dialog" aria-modal="true" aria-labelledby="tour-t"></div>`;
+      document.body.appendChild(this.root);
+      this.spot = this.root.querySelector('.spot'); this.card = this.root.querySelector('.card');
+      this.card.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.go === 'next') this.next(); if (b.dataset.go === 'prev') this.show(this.i - 1); if (b.dataset.go === 'skip') this.end(); });
+      this.onKey = e => {
+        if (e.key === 'Escape') { e.preventDefault(); this.end(); }
+        else if (e.key === 'ArrowLeft' || (e.key === 'Enter' && !e.target.closest('button'))) { e.preventDefault(); this.next(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); this.show(this.i - 1); }
+        else if (e.key === 'Tab') { const f = [...this.card.querySelectorAll('button')]; const k = f.indexOf(document.activeElement); e.preventDefault(); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+      };
+      document.addEventListener('keydown', this.onKey);
+      this.show(0);
+      const loop = () => { if (!this.open) return; this.place(); this.raf = requestAnimationFrame(loop); };
+      this.raf = requestAnimationFrame(loop);
+    },
+    next() { this.i >= STEPS.length - 1 ? this.end() : this.show(this.i + 1); },
+    show(i) {
+      if (i < 0) return;
+      this.i = i; const s = STEPS[i];
+      const old = this.spot.querySelector('.shine'); const sh = old.cloneNode(); old.replaceWith(sh); // replay the light sweep
+      this.spot.classList.toggle('center', !!s.center);
+      this.card.classList.toggle('center', !!s.center);
+      this.card.innerHTML = `<div class="body">${s.icon ? `<div class="card-icon">${ic(s.icon, 64)}</div>` : ''}<div class="card-top"><span class="prog"><span style="width:${(i + 1) / STEPS.length * 100}%"></span></span><span>${i + 1} מתוך ${STEPS.length}</span></div><h2 id="tour-t">${s.t}</h2><p>${s.x}</p>
+        <div class="card-actions"><button type="button" class="next" data-go="next">${s.last ? 'בואי נתחיל' : i === 0 ? 'יאללה, נתחיל' : 'הבא'}</button>${i > 0 && !s.last ? '<button type="button" class="prev" data-go="prev">הקודם</button>' : ''}${s.last ? '' : '<button type="button" class="skip" data-go="skip">דילוג על ההדרכה</button>'}</div></div>`;
+      if (s.el) { const first = document.querySelector(s.el[0]); if (first) first.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); }
+      setTimeout(() => { const n = this.card.querySelector('.next'); if (n) n.focus({ preventScroll: true }); }, 30);
+    },
+    rect() {
+      const s = STEPS[this.i]; if (!s.el) return null;
+      const rs = s.el.map(q => document.querySelector(q)).filter(Boolean).map(e => e.getBoundingClientRect());
+      if (!rs.length) return null;
+      const pad = 10, l = Math.min(...rs.map(r => r.left)) - pad, t = Math.min(...rs.map(r => r.top)) - pad;
+      return { left: l, top: t, width: Math.max(...rs.map(r => r.right)) + pad - l, height: Math.max(...rs.map(r => r.bottom)) + pad - t };
+    },
+    place() {
+      const r = this.rect(), vw = innerWidth, vh = innerHeight, cw = this.card.offsetWidth, ch = this.card.offsetHeight;
+      const sp = r || { left: vw / 2, top: vh / 2, width: 0, height: 0 };
+      const st = this.spot.style;
+      st.left = sp.left + 'px'; st.top = sp.top + 'px'; st.width = sp.width + 'px'; st.height = sp.height + 'px';
+      let top, left;
+      if (!r) { top = (vh - ch) / 2; left = (vw - cw) / 2; }
+      else {
+        if (r.top + r.height + 16 + ch <= vh - 12) top = r.top + r.height + 16;
+        else if (r.top - 16 - ch >= 12) top = r.top - 16 - ch;
+        else top = vh - ch - 16;
+        left = r.left + r.width / 2 - cw / 2;
+      }
+      this.card.style.top = Math.max(12, top) + 'px';
+      this.card.style.left = Math.min(Math.max(16, left), vw - cw - 16) + 'px';
+    },
+    end(silent) {
+      if (!this.open) return;
+      this.open = false; cancelAnimationFrame(this.raf);
+      document.removeEventListener('keydown', this.onKey);
+      const root = this.root; root.classList.add('out'); setTimeout(() => root.remove(), reduced || silent ? 0 : 350);
+      Store.touring = false; Store.tour = new Map();
+      ui.anchor = today(); ui.sel = null; ui.shown = []; updateStatus(); render();
+      if (silent) return;
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+      setTimeout(() => $('add').focus({ preventScroll: true }), 50);
+    }
+  };
+
+  // ---------- start ----------
+  render();
+  if (!CONFIGURED) showGate('config');
+  else if (!WALLET_KEY) showGate('nokey');
+  else {
+    Store.init(); updateStatus(); render();
+    Tour.start();
+    Store.need(neededMonths()).then(() => Store.flush());
+  }
+})();
+</script>
+</body>
+</html>
