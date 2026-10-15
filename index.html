@@ -6,7 +6,12 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F5F6F8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מעקב הוצאות">
 <title>מעקב הוצאות- מאי</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z' fill='%23E8679D'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -259,6 +264,19 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
 .gate-card .card-icon { margin-bottom: 14px; }
 .gate-card h2 { margin: 0 0 8px; font-weight: 800; font-size: 22px; }
 .gate-card p { margin: 0; color: var(--muted); }
+.gate-form { display: grid; gap: 10px; margin-top: 20px; text-align: start; }
+.gate-form label { font-weight: 700; font-size: 14px; }
+.gate-form .text-in { direction: ltr; text-align: left; }
+
+/* Install on the Mac */
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; counter-increment: s; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--s1); color: var(--q1); font-weight: 800; }
+.steps li p { margin: 4px 0 0; }
+.note { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--faint); color: var(--muted); font-size: 13px; }
+.install-hero { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; }
+.install-hero img { width: 64px; height: 64px; border-radius: 15px; box-shadow: 0 8px 20px rgb(201 63 124 / .3); }
+.install-hero p { margin: 0; color: var(--muted); }
 
 /* Guided tour */
 .tour { position: fixed; inset: 0; z-index: 90; animation: fadein .4s ease; }
@@ -320,6 +338,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     <div class="brand"><p>מעקב הוצאות- מאי</p><h1 id="hello">ערב טוב מאי, <span>תרצי להוסיף ולעדכן את ההוצאות שלך?</span></h1></div>
     <div class="ctl">
       <span class="status" id="status" data-mode="loading" role="status"><span class="dot"></span><span id="status-text">טוען…</span></span>
+      <button type="button" class="chip-btn" id="install" aria-haspopup="dialog"><span data-ic="download" data-s="15"></span>התקנה במחשב</button>
       <button type="button" class="chip-btn" id="help"><span data-ic="help" data-s="15"></span>הדרכה</button>
       <div class="seg" role="group" aria-label="תצוגה לפי"><button type="button" data-mode="week" aria-pressed="false">שבוע</button><button type="button" data-mode="month" aria-pressed="true">חודש</button></div>
       <div class="per"><button type="button" class="icon-btn" id="prev" aria-label="התקופה הקודמת"></button><p id="period" aria-live="polite"></p><button type="button" class="icon-btn" id="next" aria-label="התקופה הבאה"></button></div>
@@ -377,6 +396,13 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     </form>
   </dialog>
 
+  <dialog id="idlg" aria-labelledby="idlg-title">
+    <div class="dlg">
+      <div class="dlg-head"><h2 id="idlg-title">האפליקציה ב־Dock של המק</h2><button type="button" class="icon-btn" data-close="idlg" aria-label="סגירה"><span data-ic="x"></span></button></div>
+      <div class="dlg-body" id="install-body"></div>
+    </div>
+  </dialog>
+
   <div class="toast" id="toast" role="status" hidden><span class="msg"></span><button type="button">ביטול</button></div>
   <div class="tip" id="tip" hidden aria-hidden="true"></div>
 </div>
@@ -410,7 +436,8 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
     dots: '<circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/>',
     tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
-    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
+    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>'
   };
   const HEART = 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z';
   const ic = (n, s = 18) => n === 'heartfill'
@@ -633,8 +660,62 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
       nokey: ['צריך את הקישור האישי שלך', 'כדי להיכנס, פתחי את הקישור המלא ששלחו לך. הוא ארוך ומסתיים בקוד אישי.'],
       bad: ['הקישור לא מוכר', 'נראה שהקישור לא הועתק עד הסוף. פתחי שוב את הקישור המלא ששלחו לך.']
     }[kind];
-    g.innerHTML = `<div class="gate-card" role="alert"><div class="card-icon">${ic(kind === 'config' ? 'link' : 'heartfill', 64)}</div><h2>${msg[0]}</h2><p>${msg[1]}</p></div>`;
+    const paste = kind === 'config' ? '' : `<form class="gate-form" id="gate-form" novalidate><label for="gate-link">או הדביקי כאן את הקישור:</label><input class="text-in" id="gate-link" autocomplete="off" placeholder="https://…#k=…"><p class="err" id="gate-err" aria-live="polite"></p><button type="submit" class="btn">כניסה</button></form>`;
+    g.innerHTML = `<div class="gate-card" role="alert"><div class="card-icon">${ic(kind === 'config' ? 'link' : 'heartfill', 64)}</div><h2>${msg[0]}</h2><p>${msg[1]}</p>${paste}</div>`;
+    const f = $('gate-form');
+    if (f) f.addEventListener('submit', e => {
+      e.preventDefault();
+      const m = $('gate-link').value.match(/k=([A-Za-z0-9_-]{30,})/);
+      if (!m) { $('gate-err').textContent = 'זה לא נראה כמו הקישור האישי. העתיקי אותו שוב מההודעה, עד הסוף.'; return; }
+      location.hash = 'k=' + m[1]; location.reload();
+    });
   }
+
+  // ---------- install on the Mac (Dock) ----------
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { /* the app works without it */ });
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let installPrompt = null;
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; });
+  addEventListener('appinstalled', () => { installPrompt = null; $('install').hidden = true; toast('האפליקציה הותקנה ונמצאת ב־Dock'); });
+  if (standalone) $('install').hidden = true;
+  const isSafari = /Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|OPR|Firefox/.test(navigator.userAgent);
+  function openInstall() {
+    if (Tour.open || Store.bad) return;
+    // While this window is open the personal key sits in the address so that "Add to Dock" takes it along:
+    // a Safari web app keeps its own storage and would otherwise open without it.
+    if (WALLET_KEY) history.replaceState(null, '', location.pathname + location.search + '#k=' + WALLET_KEY);
+    const hero = `<div class="install-hero"><img src="apple-touch-icon.png" alt=""><p>האפליקציה תופיע ב־Dock עם הלב, ותיפתח בחלון משלה בלחיצה אחת. הנתונים נשארים אותם נתונים.</p></div>`;
+    let body;
+    if (installPrompt) {
+      body = `${hero}<button type="button" class="btn" id="install-now">התקנה עכשיו</button>`;
+    } else if (isSafari) {
+      body = `${hero}<ol class="steps">
+        <li><div><b>בשורת התפריטים בראש המסך, לחצי על File</b><p>בעברית: <b>קובץ</b>. זה התפריט שליד המילה Safari, למעלה משמאל.</p></div></li>
+        <li><div><b>בחרי Add to Dock…</b><p>בעברית: <b>הוספה ל־Dock…</b></p></div></li>
+        <li><div><b>בחלון שנפתח לחצי על Add</b><p>בעברית: <b>הוספה</b>. השם כבר ממולא, לא צריך לשנות אותו.</p></div></li>
+      </ol><p class="note">צריך macOS Sonoma או חדש יותר. אם האפשרות לא מופיעה בתפריט, אפשר לפתוח את הקישור ב־Chrome, וללחוץ שם על הכפתור הזה שוב.</p>`;
+    } else {
+      body = `${hero}<ol class="steps">
+        <li><div><b>בשורת הכתובת, בקצה הימני, לחצי על סמל ההתקנה</b><p>מסך קטן עם חץ למטה.</p></div></li>
+        <li><div><b>לחצי על Install</b><p>בעברית: <b>התקנה</b>.</p></div></li>
+      </ol><p class="note">אם הסמל לא מופיע: תפריט ⋮ ← Cast, save, and share ← Install page as app. אם כתוב שהאפליקציה כבר מותקנת, היא כבר ב־Dock.</p>`;
+    }
+    $('install-body').innerHTML = body;
+    const now = $('install-now');
+    if (now) now.addEventListener('click', async () => {
+      installPrompt.prompt();
+      const choice = await installPrompt.userChoice.catch(() => null);
+      installPrompt = null; idlg.close();
+      if (choice && choice.outcome === 'accepted') toast('מעולה, האפליקציה נוספה ל־Dock');
+    });
+    idlg.showModal ? idlg.showModal() : idlg.setAttribute('open', '');
+  }
+  const idlg = $('idlg');
+  idlg.addEventListener('close', () => {
+    let remembered = false;
+    try { remembered = localStorage.getItem('may-key') === WALLET_KEY; } catch (e) { /* storage blocked */ }
+    if (remembered) history.replaceState(null, '', location.pathname + location.search);
+  });
 
   // ---------- UI state ----------
   const ui = { mode: 'month', anchor: today(), sel: null, editing: null, lastAdded: null, lastAddedCat: null, animKey: '', shown: [], dowKey: '' };
@@ -868,6 +949,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     else if (b.id === 'dlg-delete') { const id = ui.editing; dlg.close(); removeExpense(id); }
     else if (b.id === 'edit-cats') openCats();
     else if (b.id === 'help') Tour.start();
+    else if (b.id === 'install') openInstall();
   });
   document.addEventListener('keydown', e => {
     if (Tour.open || Store.bad) return;
@@ -1023,14 +1105,16 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     { el: ['.a-line'], t: 'קצב ההוצאות', x: 'הקו הוורוד הוא התקופה הזאת והמקווקו הוא הקודמת. אם הוורוד גבוה יותר, את מוציאה מהר יותר.' },
     { el: ['.a-heat', '.a-dow'], t: 'לוח שנה וימים בשבוע', x: 'כל יום צבוע לפי כמה הוצאת בו, ולמטה רואים באיזה יום בשבוע יוצא הכי הרבה כסף.' },
     { el: ['.a-recent'], t: 'הוצאות אחרונות', x: 'לחיצה על הוצאה פותחת אותה לעריכה. הפח מוחק, ואפשר לבטל אם התחרטת.' },
+    { el: ['#install'], t: 'האפליקציה ב־Dock', x: 'כאן מוסיפים את האפליקציה ל־Dock של המק. אחר כך היא נפתחת בלחיצה אחת, בחלון משלה.' },
     { center: true, icon: 'star', t: 'זהו, אפשר להתחיל', x: 'הנתונים בסיור היו לדוגמה. עכשיו תראי את ההוצאות האמיתיות שלך.', last: true }
   ];
   const Tour = {
-    open: false, i: 0, root: null, spot: null, card: null, raf: 0, onKey: null,
+    open: false, i: 0, root: null, spot: null, card: null, raf: 0, onKey: null, steps: STEPS,
     start() {
       if (this.open || Store.bad) return;
       document.querySelectorAll('dialog[open]').forEach(d => d.close());
       this.open = true; this.i = 0;
+      this.steps = STEPS.filter(s => !s.el || s.el.some(q => { const e = document.querySelector(q); return e && !e.hidden && e.getClientRects().length; }));
       Store.tour = tourMonths(); Store.touring = true;
       ui.mode = 'month'; ui.anchor = today(); ui.sel = null; updateStatus(); render();
       this.root = document.createElement('div'); this.root.className = 'tour';
@@ -1049,20 +1133,20 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
       const loop = () => { if (!this.open) return; this.place(); this.raf = requestAnimationFrame(loop); };
       this.raf = requestAnimationFrame(loop);
     },
-    next() { this.i >= STEPS.length - 1 ? this.end() : this.show(this.i + 1); },
+    next() { this.i >= this.steps.length - 1 ? this.end() : this.show(this.i + 1); },
     show(i) {
       if (i < 0) return;
-      this.i = i; const s = STEPS[i];
+      this.i = i; const s = this.steps[i];
       const old = this.spot.querySelector('.shine'); const sh = old.cloneNode(); old.replaceWith(sh); // replay the light sweep
       this.spot.classList.toggle('center', !!s.center);
       this.card.classList.toggle('center', !!s.center);
-      this.card.innerHTML = `<div class="body">${s.icon ? `<div class="card-icon">${ic(s.icon, 64)}</div>` : ''}<div class="card-top"><span class="prog"><span style="width:${(i + 1) / STEPS.length * 100}%"></span></span><span>${i + 1} מתוך ${STEPS.length}</span></div><h2 id="tour-t">${s.t}</h2><p>${s.x}</p>
+      this.card.innerHTML = `<div class="body">${s.icon ? `<div class="card-icon">${ic(s.icon, 64)}</div>` : ''}<div class="card-top"><span class="prog"><span style="width:${(i + 1) / this.steps.length * 100}%"></span></span><span>${i + 1} מתוך ${this.steps.length}</span></div><h2 id="tour-t">${s.t}</h2><p>${s.x}</p>
         <div class="card-actions"><button type="button" class="next" data-go="next">${s.last ? 'בואי נתחיל' : i === 0 ? 'יאללה, נתחיל' : 'הבא'}</button>${i > 0 && !s.last ? '<button type="button" class="prev" data-go="prev">הקודם</button>' : ''}${s.last ? '' : '<button type="button" class="skip" data-go="skip">דילוג על ההדרכה</button>'}</div></div>`;
       if (s.el) { const first = document.querySelector(s.el[0]); if (first) first.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); }
       setTimeout(() => { const n = this.card.querySelector('.next'); if (n) n.focus({ preventScroll: true }); }, 30);
     },
     rect() {
-      const s = STEPS[this.i]; if (!s.el) return null;
+      const s = this.steps[this.i]; if (!s.el) return null;
       const rs = s.el.map(q => document.querySelector(q)).filter(Boolean).map(e => e.getBoundingClientRect());
       if (!rs.length) return null;
       const pad = 10, l = Math.min(...rs.map(r => r.left)) - pad, t = Math.min(...rs.map(r => r.top)) - pad;
