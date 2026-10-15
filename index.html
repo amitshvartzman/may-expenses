@@ -60,8 +60,9 @@ button { cursor: pointer; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 4px 2px 18px; }
 .brand { min-width: 0; max-width: 62ch; }
 .brand p { margin: 0 0 2px; color: var(--muted); font-size: 13px; font-weight: 700; }
-.brand h1 { margin: 0; font-weight: 800; font-size: 24px; line-height: 1.3; text-wrap: balance; }
-.brand h1 span { color: var(--muted); font-weight: 600; }
+.brand h1 { margin: 0; font-weight: 800; font-size: 27px; line-height: 1.3; text-wrap: balance; }
+.brand h1 .greet { color: var(--q1); }
+.brand h1 .ask { color: var(--muted); font-weight: 600; }
 .ctl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .seg { display: inline-flex; border: 1.5px solid var(--border); border-radius: 12px; background: var(--tile); padding: 3px; }
 .seg button { border: 0; background: transparent; padding: 6px 18px; border-radius: 9px; color: var(--muted); font-weight: 600; font-size: 14px; transition: background .2s, color .2s; }
@@ -80,13 +81,15 @@ button { cursor: pointer; }
 @keyframes blink { 50% { opacity: .3; } }
 .chip-btn { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); background: var(--tile); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--muted); transition: color .2s, border-color .2s; }
 .chip-btn:hover { color: var(--ink); border-color: var(--ink); }
+.chip-btn.accent { border-color: var(--s3); background: var(--s1); color: var(--q1); font-weight: 700; }
+.chip-btn.accent:hover { border-color: var(--q1); color: var(--q1); }
 
 /* Grid */
 .grid { display: grid; gap: 14px; grid-template-columns: 1fr 1.45fr 1fr; grid-template-areas: "sum pie heat" "ins pie dow" "cats cats cats" "line line recent"; }
 .tile { background: var(--tile); border: 1.5px solid var(--border); border-radius: var(--r); min-width: 0; display: flex; flex-direction: column; }
 .th { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1.5px solid var(--border); }
-.th h2 { margin: 0; font-weight: 800; font-size: 18px; line-height: 1.2; }
-.th .ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--faint); flex: none; }
+.th h2 { margin: 0; font-weight: 800; font-size: 20px; line-height: 1.2; }
+.th .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--faint); flex: none; }
 .th .meta { margin-inline-start: auto; color: var(--muted); font-size: 12px; }
 .head-btn { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); background: var(--tile); border-radius: 10px; padding: 5px 10px; font-size: 13px; font-weight: 600; color: var(--ink); transition: background .2s; }
 .head-btn:hover { background: var(--faint); }
@@ -213,7 +216,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
 @keyframes dlg { from { transform: translateY(14px) scale(.97); opacity: 0; } }
 .dlg { display: grid; gap: 18px; padding: 0 0 22px; }
 .dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1.5px solid var(--border); }
-.dlg-head h2 { margin: 0; font-weight: 800; font-size: 20px; }
+.dlg-head h2 { margin: 0; font-weight: 800; font-size: 22px; }
 .dlg-body { display: grid; gap: 18px; padding: 0 20px; }
 .field { display: grid; gap: 7px; border: 0; margin: 0; padding: 0; min-width: 0; }
 .field > label, .field > legend { padding: 0; font-weight: 700; font-size: 14px; }
@@ -308,7 +311,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
 .card.center .card-top { justify-content: center; }
 .prog { flex: 1; height: 4px; border-radius: 99px; background: var(--faint); overflow: hidden; max-width: 160px; }
 .prog span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--q1), var(--q2)); transition: width .5s cubic-bezier(.2,.8,.2,1); }
-.card h2 { margin: 0 0 6px; font-weight: 800; font-size: 20px; line-height: 1.25; }
+.card h2 { margin: 0 0 6px; font-weight: 800; font-size: 22px; line-height: 1.25; }
 .card p { margin: 0; color: var(--muted); font-size: 15px; }
 .card-icon { width: 64px; height: 64px; margin: 0 auto 12px; color: var(--q2); filter: drop-shadow(0 8px 18px rgb(201 63 124 / .4)); animation: float 2.4s ease-in-out infinite; }
 @keyframes float { 50% { transform: translateY(-6px) scale(1.04); } }
@@ -327,7 +330,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
   .page { padding-inline: 16px; }
   .grid { grid-template-columns: 1fr; grid-template-areas: "pie" "sum" "cats" "line" "heat" "dow" "ins" "recent"; }
   .two { grid-template-columns: 1fr; }
-  .brand h1 { font-size: 20px; }
+  .brand h1 { font-size: 22px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .viz .draw { stroke-dashoffset: 0; } .love .love-heart, .love .love-text { opacity: 1; } }
 </style>
@@ -335,11 +338,11 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
 <body>
 <div class="page">
   <header class="bar">
-    <div class="brand"><p>מעקב הוצאות- מאי</p><h1 id="hello">ערב טוב מאי, <span>תרצי להוסיף ולעדכן את ההוצאות שלך?</span></h1></div>
+    <div class="brand"><p>מעקב הוצאות- מאי</p><h1 id="hello"><span class="greet">ערב טוב מאי,</span> <span class="ask">תרצי להוסיף ולעדכן את ההוצאות שלך?</span></h1></div>
     <div class="ctl">
       <span class="status" id="status" data-mode="loading" role="status"><span class="dot"></span><span id="status-text">טוען…</span></span>
       <button type="button" class="chip-btn" id="install" aria-haspopup="dialog"><span data-ic="download" data-s="15"></span>התקנה במחשב</button>
-      <button type="button" class="chip-btn" id="help"><span data-ic="help" data-s="15"></span>הדרכה</button>
+      <button type="button" class="chip-btn accent" id="help"><span data-ic="play" data-s="15"></span>צפייה בהדרכה</button>
       <div class="seg" role="group" aria-label="תצוגה לפי"><button type="button" data-mode="week" aria-pressed="false">שבוע</button><button type="button" data-mode="month" aria-pressed="true">חודש</button></div>
       <div class="per"><button type="button" class="icon-btn" id="prev" aria-label="התקופה הקודמת"></button><p id="period" aria-live="polite"></p><button type="button" class="icon-btn" id="next" aria-label="התקופה הבאה"></button></div>
     </div>
@@ -361,7 +364,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
 
     <section class="tile a-heat" aria-labelledby="h-heat"><header class="th"><span class="ic" data-ic="cal"></span><h2 id="h-heat">לוח שנה</h2><span class="meta">בלי הוצאות דירה</span></header><div class="tb" id="heat"></div></section>
     <section class="tile a-ins" aria-labelledby="h-ins"><header class="th"><span class="ic" data-ic="bulb"></span><h2 id="h-ins">תובנות</h2></header><div class="tb" id="ins"></div></section>
-    <section class="tile a-dow" aria-labelledby="h-dow"><header class="th"><span class="ic" data-ic="bars"></span><h2 id="h-dow">ימים בשבוע</h2><span class="meta">ממוצע, 12 שבועות</span></header><div class="tb" id="dow"></div></section>
+    <section class="tile a-dow" aria-labelledby="h-dow"><header class="th"><span class="ic" data-ic="bars"></span><h2 id="h-dow">ימים בשבוע</h2><span class="meta" id="dow-meta">ממוצע, 12 שבועות</span></header><div class="tb" id="dow"></div></section>
     <section class="tile a-cats" aria-labelledby="h-cats"><header class="th"><span class="ic" data-ic="grid"></span><h2 id="h-cats">קטגוריות</h2><button type="button" class="head-btn" id="edit-cats" aria-haspopup="dialog"><span data-ic="pencil" data-s="14"></span>עריכת קטגוריות</button></header><div class="tb"><div class="cats" id="cats" role="group" aria-label="קטגוריות"></div></div></section>
     <section class="tile a-line" aria-labelledby="h-line"><header class="th"><span class="ic" data-ic="trend"></span><h2 id="h-line">קצב ההוצאות</h2><span class="meta">מצטבר</span></header><div class="tb" id="line"></div></section>
     <section class="tile a-recent" aria-labelledby="h-recent"><header class="th"><span class="ic" data-ic="list"></span><h2 id="h-recent">הוצאות אחרונות</h2><span id="filter-slot" style="margin-inline-start:auto"></span></header><div class="tb"><ul class="tx-list" id="recent"></ul></div></section>
@@ -437,7 +440,8 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     dots: '<circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/>',
     tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
-    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>'
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    play: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>'
   };
   const HEART = 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z';
   const ic = (n, s = 18) => n === 'heartfill'
@@ -568,22 +572,26 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
       if (validCats(this.settings.cats)) applyCats(this.settings.cats);
     },
     saveCache() { const o = {}; for (const [k, v] of this.real) o[k] = v; LS.set('cache', { months: o, settings: this.settings }); LS.set('pending', this.pending); },
-    applyPending() {
-      for (const op of this.pending) {
-        if (op.t === 'put') this.real.set(op.m, { ...(this.real.get(op.m) || {}), [op.id]: op.item });
-        else if (op.t === 'del') { const it = { ...(this.real.get(op.m) || {}) }; delete it[op.id]; this.real.set(op.m, it); }
-        else if (op.t === 'set') this.settings = op.s;
-      }
+    applyOp(op) {
+      if (op.t === 'put') this.real.set(op.m, { ...(this.real.get(op.m) || {}), [op.id]: op.item });
+      else if (op.t === 'del') { const it = { ...(this.real.get(op.m) || {}) }; delete it[op.id]; this.real.set(op.m, it); }
+      else if (op.t === 'set') this.settings = op.s;
     },
+    applyPending() { for (const op of this.pending) this.applyOp(op); },
+    done: [], // changes the server confirmed recently, with the time it confirmed them
     async need(keys, force) {
       if (this.bad || !WALLET_KEY) return;
       const want = force ? keys : keys.filter(k => !this.loaded.has(k));
       if (!want.length) return;
-      this.lastFetch = Date.now();
+      const started = Date.now();
+      this.lastFetch = started;
       try {
         const res = await rpc('wallet_load', { p_key: WALLET_KEY, p_months: want });
         for (const k of want) { this.real.set(k, { ...(((res && res.months) || {})[k] || {}) }); this.loaded.add(k); }
         this.settings = (res && res.settings) || {};
+        // A save confirmed while this answer was on its way may be missing from it: put it back.
+        this.done = this.done.filter(op => Date.now() - op.at < 120000);
+        for (const op of this.done) if (op.at >= started) this.applyOp(op);
         this.applyPending(); // local changes still on their way win
         // Remember the key on this device, then take it out of the address bar so it can't leak in a screenshot or a copied URL.
         let remembered = false;
@@ -606,6 +614,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
           if (op.t === 'put') await rpc('wallet_put', { p_key: WALLET_KEY, p_month: op.m, p_id: op.id, p_item: op.item });
           else if (op.t === 'del') await rpc('wallet_delete', { p_key: WALLET_KEY, p_month: op.m, p_id: op.id });
           else if (op.t === 'set') await rpc('wallet_save_settings', { p_key: WALLET_KEY, p_settings: op.s });
+          this.done.push({ ...op, at: Date.now() });
         } catch (e) {
           if (e.code === '22023') { toast('משהו לא נשמר כי הוא לא תקין.'); } // drop a change the server will never accept
           else { failed = e; break; }
@@ -773,6 +782,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
       set(target, popId) {
         const from = vals.length === target.length ? vals.slice() : target.map(() => 0), t0 = performance.now(), dur = reduced ? 1 : 900;
         if (tween) cancelAnimationFrame(tween);
+        draw(from); // labels follow the new view at once, even before the first animation frame
         const pi = CATS.findIndex(c => c.id === popId);
         if (pi >= 0 && segs[pi] && !reduced) { const s = segs[pi]; s.classList.remove('pulse'); void s.getBBox(); s.classList.add('pulse'); }
         const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); draw(from.map((f, i) => f + (target[i] - f) * e)); if (k < 1) tween = requestAnimationFrame(step); };
@@ -818,7 +828,7 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
     $('period').textContent = mode === 'month' ? dMonth.format(p.start) : `${dShort.format(p.start)} – ${dShort.format(p.end)}`;
     $('next').disabled = isCur;
-    $('hello').innerHTML = `${greeting()} מאי, <span>תרצי להוסיף ולעדכן את ההוצאות שלך?</span>`;
+    updateGreeting();
 
     const all = Store.all();
     const sumBy = (a, b) => { const m = {}; let total = 0, count = 0; for (const x of all) if (x.date >= a && x.date <= b) { m[x.cat] = (m[x.cat] || 0) + x.amount; total += x.amount; count++; } return { m, total, count }; };
@@ -888,10 +898,15 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     }
     $('heat').innerHTML = hh + '</div><div class="ramp" aria-hidden="true">פחות<i style="background:var(--s1)"></i><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i><i style="background:var(--s4)"></i><i style="background:var(--s5)"></i>יותר</div>';
 
-    // weekdays: last 12 weeks, without apartment costs
-    const from = iso(addDays(t, -83)), wsum = Array(7).fill(0);
+    // weekdays: average per weekday over the last 12 weeks, or since the first expense if that is more recent; without apartment costs
+    let first = null; for (const x of all) if (x.date <= ti && (!first || x.date < first)) first = x.date;
+    const winStart = first && parse(first) > addDays(t, -83) ? parse(first) : addDays(t, -83), from = iso(winStart);
+    const wsum = Array(7).fill(0), wcount = Array(7).fill(0);
+    for (let d = new Date(winStart); d <= t; d = addDays(d, 1)) wcount[d.getDay()]++;
     for (const x of all) if (x.cat !== 'apt' && x.date >= from && x.date <= ti) wsum[parse(x.date).getDay()] += x.amount;
-    const wavg = wsum.map(v => Math.round(v / 12)), wmax = Math.max(...wavg), top = wavg.indexOf(wmax);
+    const wavg = wsum.map((v, i) => wcount[i] ? Math.round(v / wcount[i]) : 0), wmax = Math.max(...wavg), top = wavg.indexOf(wmax);
+    const weeks = Math.min(12, Math.max(1, Math.ceil((dayDiff(winStart, t) + 1) / 7)));
+    $('dow-meta').textContent = 'ממוצע, ' + (weeks === 1 ? 'שבוע אחרון' : weeks + ' שבועות');
     if (wmax > 0) {
       const W = 330, H = 200, B = 172, T = 24, slot = W / 7, bw = 30, ymax = niceMax(wmax * 1.1);
       const rise = ui.dowKey !== String(Store.touring) && !reduced; ui.dowKey = String(Store.touring);
@@ -970,7 +985,8 @@ dialog[open] { animation: dlg .3s cubic-bezier(.2,.9,.3,1.15); }
     lastDay = d; if (wasCurrent) ui.anchor = today();
     Store.need(neededMonths()); render();
   }
-  setInterval(() => { checkDay(); if (!document.hidden) Store.refresh(); }, 60000);
+  function updateGreeting() { $('hello').innerHTML = `<span class="greet">${greeting()} מאי,</span> <span class="ask">תרצי להוסיף ולעדכן את ההוצאות שלך?</span>`; }
+  setInterval(() => { updateGreeting(); checkDay(); if (!document.hidden) Store.refresh(); }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkDay(); Store.refresh(); } });
   addEventListener('online', () => { Store.flush(); Store.need(neededMonths(), true); });
 

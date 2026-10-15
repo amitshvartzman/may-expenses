@@ -1,6 +1,6 @@
 // Lets the installed app open even without internet. Always tries the network first,
 // so May gets the newest version whenever she is online. Database calls are never cached.
-const CACHE = 'may-shell-v1';
+const CACHE = 'may-shell-v2';
 const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
